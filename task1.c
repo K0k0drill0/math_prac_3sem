@@ -34,7 +34,8 @@ int func_p(int num) {
     if (num == 0 || num == 1) {
         return -1;
     }
-    for (int i = 2; i <= (int)sqrt(num); i+=2) {
+    if (num == 2) return 1;
+    for (int i = 3; i <= (int)sqrt(num); i+=2) {
         if (num % i == 0) {
             return 0;
         }
