@@ -148,6 +148,7 @@ int main(int argc, char** argv) {
             break;
         case 0:
             printf("The number is not prime\n");
+            break;
         case -1:
             printf("The number is neither prime nor composite.\n");
         default:
