@@ -108,13 +108,13 @@ int func_f(int num, ull* ans) {
 int main(int argc, char** argv) {
     if (argc != 3) {
         printf("Input error: the amount of arguments is not correct.\n");
-        return 0;
+        return 1;
     }
     if (strlen(argv[2]) != 2 || (argv[2][0] != '-' && argv[2][0] != '/') || 
     (argv[2][1] != 'h' && argv[2][1] != 'p' && argv[2][1] != 's' &&
     argv[2][1] != 'e' && argv[2][1] != 'a' && argv[2][1] != 'f')) {
         printf("Input error: wrong flag.\n");
-        return 0;
+        return 1;
     }
     for (ull i = 0; i < strlen(argv[1]); i++) {
         if (!isdigit(argv[1][i])) {
@@ -122,12 +122,12 @@ int main(int argc, char** argv) {
                 continue;
             }
             printf("Input error: second argument should be a number.\n");
-            return 0;
+            return 1;
         }
     }
     if (argv[2][1] == 'e' && atoi(argv[1]) > 10) {
         printf("Input error: the number is too big.\n");
-        return 0;
+        return 1;
     }
 
     if (argv[2][1] == 'h') {
