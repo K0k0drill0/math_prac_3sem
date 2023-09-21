@@ -57,45 +57,13 @@ void func_s(FILE* inp, FILE* outp) {
     fputs(pr_am, outp);
 }
 
-void decimal_to_hexadecimal(int decimal, char* hexadecimal) {
-    int remainder, quotient;
-    //char hexadecimal[100];
-    int i = 1, j;
-
-    quotient = decimal;
-
-    while (quotient != 0) {
-        remainder = quotient % 16;
-
-        if (remainder < 10)
-            hexadecimal[i++] = 48 + remainder;
-        else
-            hexadecimal[i++] = 55 + remainder;
-
-        quotient = quotient / 16;
-    }
-
-    int cnt = 0;
-    char ans[100];
-    for (j = i - 1; j > 0; j--) {
-        ans[cnt] = hexadecimal[j];
-        cnt++;
-    }
-    ans[cnt] = '\0';
-    for (int i = 0; i < strlen(ans); i++) {
-        hexadecimal[i] = ans[i];
-    }
-    hexadecimal[cnt] = '\0';
-    //free(ans);
-}
-
 void func_a(FILE* inp, FILE* outp)  {
     char c = fgetc(inp);
     char pr_am[50];
     while (c != EOF) {
         if (!isalpha(c) && !isdigit(c) && c != ' ') {
             char new[100];
-            decimal_to_hexadecimal((int)c, new);
+            sprintf(new, "%X", (int)c);
             fputs(new, outp);
             c = fgetc(inp);
             continue;
@@ -108,7 +76,7 @@ void func_a(FILE* inp, FILE* outp)  {
 int main(int argc, char** argv) {
     if (argc != 3 && argc != 4) {
         printf("Error: wrong amount of arguments.\n");
-        return 0;
+        return 1;
     }
     if ((strlen(argv[1]) != 2 && strlen(argv[1]) != 3) ||
      (strlen(argv[1]) == 3 && argv[1][1] != 'n') || (strlen(argv[1]) == 3
@@ -117,11 +85,11 @@ int main(int argc, char** argv) {
       && argv[1][1] != 'd' && argv[1][1] != 'i' && argv[1][1] != 's' &&
        argv[1][1] != 'a')) {
         printf("Error: wrong flag.\n");
-        return 0;
+        return 1;
     }
     if (strlen(argv[1]) == 3 && argc != 4) {
         printf("Error: wrong amount of arguments.\n");
-        return 0;
+        return 1;
     }
 
     FILE* inp;
@@ -129,7 +97,7 @@ int main(int argc, char** argv) {
     inp = fopen(argv[2], "r");
     if (inp == NULL) {
         printf("Error: opening file.\n");
-        return 0;
+        return -2;
     }
     if (argc == 3) {
         char *filename = argv[2];
@@ -154,7 +122,8 @@ int main(int argc, char** argv) {
 
     if (outp == NULL) {
         printf("Error: opening file.\n");
-        return 0;
+        fclose(inp);
+        return -2;
     }
 
     if (strlen(argv[1]) == 2) {
@@ -195,4 +164,7 @@ int main(int argc, char** argv) {
             break;
         }
     }
+    fclose(inp);
+    fclose(outp);
+    return 0;
 }
