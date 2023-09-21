@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
     }
     else if (argv[2][1] == 'f') {
         ull ans = 1;
-        switch (func_a(atoi(argv[1]), &ans))
+        switch (func_f(atoi(argv[1]), &ans))
         {
         case OK:
             printf("%llu\n", ans);
