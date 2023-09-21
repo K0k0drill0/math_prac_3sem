@@ -6,10 +6,14 @@
 enum solve_statuses {
     ONE_ROOT,
     TWO_ROOTS,
-    NO_ROOTS
+    NO_ROOTS,
+    A_IS_ZERO
 };
 
 int solve_equation(double eps, double a, double b, double c, double* ans1, double* ans2) {
+    if (fabs(a) < eps) {
+        return A_IS_ZERO;
+    }
     double discr = (b * b - 4 * a * c);
     if (discr < 0.0) {
         return NO_ROOTS;
@@ -40,40 +44,29 @@ void pr_solve(double eps, double a, double b, double c) {
             printf("For a = %f, b = %f, c = %f:\n", a, b, c);
             printf("There are no real roots\n");
             break;
+        case A_IS_ZERO:
+            printf("For a = %f, b = %f, c = %f:\n", a, b, c);
+            printf("This is not a quadratic equation.\n");
+            break;
         default:
             break;
     }
 }
 
-void func_q(double eps, double a, double b, double c) {
-    //double ans1, ans2;
-    if (fabs(a-b) < eps && fabs(b-c) < eps && fabs(a-c) < eps) {
-        pr_solve(eps, a, b, c);
-    }
-    else if (fabs(a-b) < eps) {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, a, c, b);
-        pr_solve(eps, c, a, b);
-    }
-    else if (fabs(a-c) < eps) {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, b, a, c);
-        pr_solve(eps, a, c, b);
-    }
-    else if (fabs(b-c) < eps) {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, b, a, c);
-        pr_solve(eps, c, b, a);
-    }
-    else {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, a, c, b);
-        pr_solve(eps, b, a, c);
-        pr_solve(eps, b, c, a);
-        pr_solve(eps, c, a, b);
-        pr_solve(eps, c, b, a);
-    }
+void swap(int* arr, int ind1, int ind2) {
+    int tmp = arr[ind1];
+    arr[ind1] = arr[ind2];
+    arr[ind2] = tmp; 
+}
 
+void func_q(double eps, double a, double b, double c) {
+    int coeff[3] = {a, b, c};
+    for (int i = 0; i < 3; i++) {
+        swap(coeff, 0, 1);
+        pr_solve(eps, coeff[0], coeff[1], coeff[2]);
+        swap(coeff, 1, 2);
+        pr_solve(eps, coeff[0], coeff[1], coeff[2]);
+    }
 }
 
 bool func_m(double x, double y) {
@@ -82,10 +75,13 @@ bool func_m(double x, double y) {
 }
 
 bool func_t(double eps, double a, double b, double c) {
-    if (a < 0.0 || b < 0.0 || c < 0.0) {
+    if (fabs(a) < eps || fabs(b) < eps || fabs(c) < eps) {
         return 0;
     }
-    return (fabs(a*a - b*b - c*c) < eps || fabs(b*b - a*a - c*c) < eps || (c*c - b*b - a*a) < eps);
+    double sqra = a*a;
+    double sqrb = b*b;
+    double sqrc = c*c;
+    return (fabs(sqra - sqrb - sqrc) < eps || fabs(sqrb - sqra - sqrc) < eps || (sqrc - sqrb - sqra) < eps);
 }
 
 int main(int argc, char** argv) {
