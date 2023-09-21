@@ -101,6 +101,10 @@ int main(int argc, char** argv) {
     }
     
     if (argv[1][1] == 'q') {
+        if (atof(argv[2]) < 0.0) {
+            printf("Eps can not be negative.\n");
+            return 1;
+        }
         func_q(atof(argv[2]), atof(argv[3]), atof(argv[4]), atof(argv[5]));
     }
     if (argv[1][1] == 'm') {
@@ -112,6 +116,10 @@ int main(int argc, char** argv) {
         }
     }
     if (argv[1][1] == 't') {
+         if (atof(argv[2]) < 0.0) {
+            printf("Eps can not be negative.\n");
+            return 1;
+        }
         if (func_t(atof(argv[2]), atof(argv[3]), atof(argv[4]), atof(argv[5]))) {
             printf("Yes, these numbers can be the lengths of a right triangle\n");
         }
