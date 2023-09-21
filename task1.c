@@ -7,19 +7,34 @@
 
 #define ull unsigned long long int
 
-void func_h(int num) {
+static char *Error_Names[] = {
+    "Error: wrong input data.",
+    "Error: overflow",
+};
+
+enum func_statuses {
+    OK = -1,
+    WRONG_INP_PARAMETR,
+    OWERFLOW,
+};
+
+int func_h(int num) {
     if (num <= 0 || num > 100) {
-        printf("No such numbers.\n");
-        return;
+        return WRONG_INP_PARAMETR;
     }
 
     for (int i = num; i <= 100; i += num) {
         printf("%d\n", i);
     }
+    return OK;
 }
 
-bool func_p(int num) {
-    for (int i = 2; i <= (int)sqrt(num); i++) {
+int func_p(int num) {
+    num = abs(num);
+    if (num == 0 || num == 1) {
+        return -1;
+    }
+    for (int i = 2; i <= (int)sqrt(num); i+=2) {
         if (num % i == 0) {
             return 0;
         }
@@ -42,48 +57,52 @@ ull my_pow(int x, int y) {
     return ans;
 }
 
-void func_e(int num) {
+int func_e(int num) {
     if (num < 1) {
-        printf("No such numbers.\n");
-        return;
+        return WRONG_INP_PARAMETR;
     }
     printf("|\t\tbase\t\t|\t\tpower\t\t|\t\tvalue\t\t|\n");
+    ull outp = 1;
     for (int i = 1; i <= 10; i++) {
         for (int j = 1; j <= num; j++) {
-            printf("|\t\t%d\t\t|\t\t%d\t\t|\t\t%llu\t\t\n", i, j, my_pow(i, j));
+            outp *= i;
+            printf("|\t\t%d\t\t|\t\t%d\t\t|\t\t%llu\t\t\n", i, j, outp);
         }
+        outp = 1;
     }
+    return OK;
 }
 
-ull func_a(int num) {
+int func_a(int num, ull* ans) {
     if (num < 1) {
-        printf("No such number.\n");
-        return 0;
+        return WRONG_INP_PARAMETR;
     }
-    ull ans = 0;
     for (ull i = 1; i <= num; i++) {
-        if (ULLONG_MAX - i < ans) {
-            printf("Error: owerflow.\n");
-            return 0;
+        if (ULLONG_MAX - i < *ans) {
+            return OWERFLOW;
         }
-        ans += i;
+        *ans += i;
     }
-    return ans;
+    return OK;
 }
 
-ull func_f(int num) {
+
+
+int func_f(int num, ull* ans) {
+    if (num < 0) {
+        return WRONG_INP_PARAMETR;
+    }
     if (num == 0 || num == 1) {
-        return 1;
+        *ans = 1;
+        return OK;
     }
-    ull ans = 1;
     for (int i = 2; i <= num; i++) {
-        if (ULLONG_MAX / i < ans) {
-            printf("Error: owerflow.\n");
-            return 0;
+        if (ULLONG_MAX / i < *ans) {
+            return OWERFLOW;
         }
-        ans *= i;
+        *ans *= i;
     }
-    return ans;
+    return OK;
 }
 
 int main(int argc, char** argv) {
@@ -112,30 +131,74 @@ int main(int argc, char** argv) {
     }
 
     if (argv[2][1] == 'h') {
-        func_h(atoi(argv[1]));
+        switch (func_h(atoi(argv[1])))
+        {
+        case WRONG_INP_PARAMETR:
+            printf("%s\n", Error_Names[WRONG_INP_PARAMETR]);
+            break;
+        default:
+            break;
+        }
     }
     else if (argv[2][1] == 'p') {
-        if (func_p(atoi(argv[1]))) {
+        switch (func_p(atoi(argv[1])))
+        {
+        case 1:
             printf("The number is prime\n");
-        }
-        else {
+            break;
+        case 0:
             printf("The number is not prime\n");
+        case -1:
+            printf("The number is neither prime nor composite.\n");
+        default:
+            break;
         }
     }
     else if (argv[2][1] == 's') {
         func_s(argv[1]);
     }
     else if (argv[2][1] == 'e') {
-        func_e(atoi(argv[1]));
+        switch (func_e(atoi(argv[1])))
+        {
+        case WRONG_INP_PARAMETR:
+            printf("%s\n", Error_Names[WRONG_INP_PARAMETR]);
+            break;
+        default:
+            break;
+        }
     }
     else if (argv[2][1] == 'a') {
-        if (func_a(atoi(argv[1]))) {
-            printf("%llu\n", func_a(atoi(argv[1])));
+        ull ans = 0;
+        switch (func_a(atoi(argv[1]), &ans))
+        {
+        case OK:
+            printf("%llu\n", ans);
+            break;
+        case OWERFLOW:
+            printf("%s\n", Error_Names[OWERFLOW]);
+            break;
+        case WRONG_INP_PARAMETR:
+            printf("%s\n", Error_Names[WRONG_INP_PARAMETR]);
+            break;
+        default:
+            break;
         }
     }
     else if (argv[2][1] == 'f') {
-        if (func_f(atoi(argv[1]))) {
-            printf("%llu", func_f(atoi(argv[1])));
+        ull ans = 1;
+        switch (func_a(atoi(argv[1]), &ans))
+        {
+        case OK:
+            printf("%llu\n", ans);
+            break;
+        case OWERFLOW:
+            printf("%s\n", Error_Names[OWERFLOW]);
+            break;
+        case WRONG_INP_PARAMETR:
+            printf("%s\n", Error_Names[WRONG_INP_PARAMETR]);
+            break;
+        default:
+            break;
         }
     }
 
