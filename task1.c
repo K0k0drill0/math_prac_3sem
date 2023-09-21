@@ -50,14 +50,6 @@ void func_s(char* str) {
     printf("\n");
 }
 
-ull my_pow(int x, int y) {
-    ull ans = 1;
-    for (int i = 0; i < y; i++) {
-        ans *= x;
-    }
-    return ans;
-}
-
 int func_e(int num) {
     if (num < 1) {
         return WRONG_INP_PARAMETR;
