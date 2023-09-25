@@ -2,12 +2,27 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
+#include <ctype.h>
+
+char *Error_text[] = {
+    "Error: wrong flag.",
+    "Error: wrong amount of arguments.",
+    "Error: wrong argument(s).",
+    "Error: wrong epsilon."
+};
 
 enum solve_statuses {
     ONE_ROOT,
     TWO_ROOTS,
     NO_ROOTS,
     A_IS_ZERO
+};
+
+enum error_statuses{
+    WRONG_FLAG,
+    WRONG_AMOUNG_OF_ARGUMENTS,
+    WRONG_ARGUMENTS,
+    WRONG_EPSILON
 };
 
 int solve_equation(double eps, double a, double b, double c, double* ans1, double* ans2) {
@@ -53,20 +68,41 @@ void pr_solve(double eps, double a, double b, double c) {
     }
 }
 
-void swap(int* arr, int ind1, int ind2) {
-    int tmp = arr[ind1];
-    arr[ind1] = arr[ind2];
-    arr[ind2] = tmp; 
-}
-
 void func_q(double eps, double a, double b, double c) {
-    int coeff[3] = {a, b, c};
-    for (int i = 0; i < 3; i++) {
-        swap(coeff, 0, 1);
-        pr_solve(eps, coeff[0], coeff[1], coeff[2]);
-        swap(coeff, 1, 2);
-        pr_solve(eps, coeff[0], coeff[1], coeff[2]);
+    if (fabs(a-b) < eps && fabs(b-c) < eps && fabs(a-c) < eps) {
+        pr_solve(eps, a, b, c);
     }
+    else if (fabs(a-b) < eps) {
+        pr_solve(eps, a, b, c);
+        pr_solve(eps, a, c, b);
+        pr_solve(eps, c, a, b); 
+    }
+    else if (fabs(a-c) < eps) {
+        pr_solve(eps, a, b, c);
+        pr_solve(eps, b, a, c);
+        pr_solve(eps, a, c, b);
+    }
+    else if (fabs(b-c) < eps) {
+        pr_solve(eps, a, b, c);
+        pr_solve(eps, b, a, c);
+        pr_solve(eps, c, b, a);
+    }
+    else {
+        pr_solve(eps, a, b, c);
+        pr_solve(eps, a, c, b);
+        pr_solve(eps, b, a, c);
+        pr_solve(eps, b, c, a);
+        pr_solve(eps, c, a, b);
+        pr_solve(eps, c, b, a);
+    }
+
+    // int coeff[3] = {a, b, c};
+    // for (int i = 0; i < 3; i++) {
+    //     swap(coeff, 0, 1);
+    //     pr_solve(eps, coeff[0], coeff[1], coeff[2]);
+    //     swap(coeff, 1, 2);
+    //     pr_solve(eps, coeff[0], coeff[1], coeff[2]);
+    // }
 }
 
 bool func_m(double x, double y) {
@@ -84,36 +120,66 @@ bool func_t(double eps, double a, double b, double c) {
     return (fabs(sqra - sqrb - sqrc) < eps || fabs(sqrb - sqra - sqrc) < eps || (sqrc - sqrb - sqra) < eps);
 }
 
+bool is_float(char* str) {
+    int n = strlen(str);
+    if (!isdigit(str[0]) && str[0] != '-') return false;
+    int dot_cnt = 0;
+    for (int i = 1; i < n; i++) {
+        if (!isdigit(str[i])) {
+            if (str[i] == '.') dot_cnt++;
+            else return false;
+            if (dot_cnt > 1) return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, char** argv) {
     if (strlen(argv[1]) != 2 || (argv[1][0] != '-' && argv[1][0] != '/') ||
     (argv[1][1] != 'q' && argv[1][1] != 'm' && argv[1][1] != 't')) {
-        printf("Input error: wrong flag.\n");
+        printf("%s\n", Error_text[WRONG_FLAG]);
         return 1;
     }
     if ((argv[1][1] == 'q' && argc != 6) || (argv[1][1] == 'm' && argc != 4) ||
      (argv[1][1] == 't' && argc != 6)) {
-        printf("Input error: wrong amount of arguments.\n");
+        printf("%s\n", Error_text[WRONG_AMOUNG_OF_ARGUMENTS]);
         return 1;
     }
     
-    if (argv[1][1] == 'q') {
-        if (atof(argv[2]) < 0.0) {
-            printf("Eps can not be negative.\n");
+    switch (argv[1][1])
+    {
+    case 'q':
+        if (!is_float(argv[2]) || !is_float(argv[3]) ||
+         !is_float(argv[4]) || !is_float(argv[5])) {
+            printf("%s\n", Error_text[WRONG_ARGUMENTS]);
+            return 1;
+         }
+        if (atof(argv[2]) <= 0.0) {
+            printf("%s\n", Error_text[WRONG_EPSILON]);
             return 1;
         }
         func_q(atof(argv[2]), atof(argv[3]), atof(argv[4]), atof(argv[5]));
-    }
-    if (argv[1][1] == 'm') {
+        break;
+    case 'm':
+        if (!is_float(argv[2]) || !is_float(argv[3])) {
+            printf("%s\n", Error_text[WRONG_ARGUMENTS]);
+            return 1;
+        }
         if (func_m(atof(argv[2]), atof(argv[3]))) {
             printf("Yes, the first number is a multiple of the second.\n");
         }
         else {
             printf("No, the first number is not a multiple of the second.\n");
         }
-    }
-    if (argv[1][1] == 't') {
-         if (atof(argv[2]) < 0.0) {
-            printf("Eps can not be negative.\n");
+        break;
+    case 't':
+        if (!is_float(argv[2]) || !is_float(argv[3]) ||
+         !is_float(argv[4]) || !is_float(argv[5])) {
+            printf("%s\n", Error_text[WRONG_ARGUMENTS]);
+            return 1;
+        }
+        if (atof(argv[2]) <= 0.0) {
+            printf("%s\n", Error_text[WRONG_EPSILON]);
             return 1;
         }
         if (func_t(atof(argv[2]), atof(argv[3]), atof(argv[4]), atof(argv[5]))) {
@@ -122,6 +188,9 @@ int main(int argc, char** argv) {
         else {
             printf("No, these numbers can not be the lengths of a right triangle\n");
         }
+        break;
+    default:
+        break;
     }
 
 }
