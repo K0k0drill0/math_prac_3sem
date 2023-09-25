@@ -129,7 +129,7 @@ void func_a(FILE* inp, FILE* outp) {
             cnt++;
             continue;
         }
-        if (cnt != 0 && cnt % 2 == 0) {
+        if (cnt != 0 && !(cnt & 1)) {
             second_condition(inp, outp, &c);
             cnt++;
             continue;

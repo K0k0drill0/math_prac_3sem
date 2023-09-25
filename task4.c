@@ -126,8 +126,7 @@ int main(int argc, char** argv) {
         return -2;
     }
 
-    if (strlen(argv[1]) == 2) {
-        switch (argv[1][1])
+    switch (argv[1][strlen(argv[1]) == 2 ? 1 : 2])
         {
         case 'd':
             func_d(inp, outp);
@@ -144,26 +143,7 @@ int main(int argc, char** argv) {
         default:
             break;
         }
-    }
-    else {
-        switch (argv[1][2])
-        {
-        case 'd':
-            func_d(inp, outp);
-            break;
-        case 'i':
-            func_i(inp, outp);
-            break;
-        case 's':
-            func_s(inp, outp);
-            break;
-        case 'a':
-            func_a(inp, outp);
-            break;
-        default:
-            break;
-        }
-    }
+
     fclose(inp);
     fclose(outp);
     return 0;

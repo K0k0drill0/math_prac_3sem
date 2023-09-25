@@ -2,18 +2,21 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
 
 #define ull unsigned long long
 
 static char *Error_names[] = {
-    "Wrong amount of arguments.",
-    "Wrong epsilone.",
+    "Error: wrong amount of arguments.",
+    "Error: wrong epsilone.",
+    "Error: wrong argument(s)."
 };
 
 enum Errors{
     ok = -1,
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_EPS,
+    WRONG_ARGUMENTS
 };
 
 double fsum_a(double eps, double x) {
@@ -28,13 +31,11 @@ double fsum_a(double eps, double x) {
         x_pow *= x;
         res1 = res2;
         res2 += (x_pow / (double)n_fact);
-        //printf("%f, %f, %f\n", res1, res2, pl_el);
     } while (fabs(res1-res2) > eps);
     return res2;
 }
 
 double fsum_b(double eps, double x) {
-    //double xsq = x*x;
     int n = 0;
     int m_one_pow = 1;
     int tn_fact = 1;
@@ -50,8 +51,6 @@ double fsum_b(double eps, double x) {
         res1 = res2;
         pl_res = (double)m_one_pow * x_pow * x_pow / (double)tn_fact;
         res2 += pl_res;
-        // printf("%d %f %d\n", m_one_pow, x_pow * x_pow, tn_fact);
-        // printf("%f, %f, %f\n", res1, res2, pl_res);
     } while (fabs(res1-res2) > eps);
     return res2;
 }
@@ -74,8 +73,6 @@ double fsum_c(double eps, double x) {
         res1 = res2;
         pl_res = pow(three_pow, 3) * pow(n_fac, 3) * pow(x_pow, 2) / tn_fac;
         res2 += pl_res;
-        // printf("%d, %llu, %f, %f, %f, %f\n", n, three_pow, n_fac, x_pow, tn_fac, pl_res);
-        // printf("%f, %f\n", res1, res2);
     } while (fabs(res1-res2) > eps);
     return res2;
 }
@@ -98,10 +95,22 @@ double fsum_d(double eps, double x) {
         pl_res = m_one_pow * odd_fac * x_pow * x_pow / even_fac;
         res1 = res2;
         res2 += pl_res;
-        // printf("%d, %d, %f, %f, %f, %f\n", n, m_one_pow, odd_fac, even_fac , x_pow, pl_res);
-        // printf("%f, %f\n", res1, res2);
     } while (fabs(res1-res2) > eps);
     return res2;
+}
+
+bool is_float(char* str) {
+    int n = strlen(str);
+    if (!isdigit(str[0]) && str[0] != '-') return false;
+    int dot_cnt = 0;
+    for (int i = 1; i < n; i++) {
+        if (!isdigit(str[i])) {
+            if (str[i] == '.') dot_cnt++;
+            else return false;
+            if (dot_cnt > 1) return false;
+        }
+    }
+    return true;
 }
 
 int main(int argc, char** argv) {
@@ -109,24 +118,18 @@ int main(int argc, char** argv) {
         printf("%s\n", Error_names[WRONG_AMOUNT_OF_ARGUMENTS]);
         return 1;
     }
-    for (int i = 0; i < strlen(argv[1]); i++) {
-        if (i == 0 && !isdigit(argv[1][i])) {
-            printf("%s\n", Error_names[WRONG_EPS]);
-            return 1;
-        }
-        int dot_c = 0;
-        if (!isdigit(argv[1][i]) && argv[1][i] != '.') {
-            printf("%s\n", Error_names[WRONG_EPS]);
-            return 1;
-        }
-        if (argv[1][i] == '.') dot_c++;
-        if (dot_c > 1) {
-            printf("%s\n", Error_names[WRONG_EPS]);
-            return 1;
-        }
+
+    if (!is_float(argv[1])) {
+        printf("%s\n", Error_names[WRONG_ARGUMENTS]);
+        return 1;
     }
 
     double eps = atof(argv[1]);
+    if (eps <= 0.0) {
+        printf("%s\n", Error_names[WRONG_EPS]);
+        return 1;
+    }
+
     double x;
     printf("Input the x.\n");
     scanf("%lf", &x);

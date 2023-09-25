@@ -79,8 +79,6 @@ int func_a(int num, ull* ans) {
     return OK;
 }
 
-
-
 int func_f(int num, ull* ans) {
     if (num < 0) {
         return WRONG_INP_PARAMETR;
