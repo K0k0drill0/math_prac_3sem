@@ -133,33 +133,6 @@ void func_q(double eps, double a, double b, double c) {
          unique_permutations[i][2]);
     }
 
-    // if (fabs(a-b) < eps && fabs(b-c) < eps && fabs(a-c) < eps) {
-    //     pr_solve(eps, a, b, c);
-    // }
-    // else if (fabs(a-b) < eps) {
-    //     pr_solve(eps, a, b, c);
-    //     pr_solve(eps, a, c, b);
-    //     pr_solve(eps, c, a, b); 
-    // }
-    // else if (fabs(a-c) < eps) {
-    //     pr_solve(eps, a, b, c);
-    //     pr_solve(eps, b, a, c);
-    //     pr_solve(eps, a, c, b);
-    // }
-    // else if (fabs(b-c) < eps) {
-    //     pr_solve(eps, a, b, c);
-    //     pr_solve(eps, b, a, c);
-    //     pr_solve(eps, c, b, a);
-    // }
-    // else {
-    //     pr_solve(eps, a, b, c);
-    //     pr_solve(eps, a, c, b);
-    //     pr_solve(eps, b, a, c);
-    //     pr_solve(eps, b, c, a);
-    //     pr_solve(eps, c, a, b);
-    //     pr_solve(eps, c, b, a);
-    // }
-
 }
 
 bool func_m(double x, double y) {
