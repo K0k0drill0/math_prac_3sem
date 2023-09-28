@@ -15,7 +15,7 @@ static char *Error_Names[] = {
 enum func_statuses {
     OK = -1,
     WRONG_INP_PARAMETR,
-    OWERFLOW,
+    OVERFLOW,
 };
 
 int func_h(int num) {
@@ -30,11 +30,11 @@ int func_h(int num) {
 }
 
 int func_p(int num) {
-    num = abs(num);
-    if (num == 0 || num == 1) {
+    if (num <= 0) {
         return -1;
     }
     if (num == 2) return 1;
+    if (!(num & 1)) return 0;
     for (int i = 3; i <= (int)sqrt(num); i+=2) {
         if (num % i == 0) {
             return 0;
@@ -72,7 +72,7 @@ int func_a(int num, ull* ans) {
     }
     for (ull i = 1; i <= num; i++) {
         if (ULLONG_MAX - i < *ans) {
-            return OWERFLOW;
+            return OVERFLOW;
         }
         *ans += i;
     }
@@ -89,7 +89,7 @@ int func_f(int num, ull* ans) {
     }
     for (int i = 2; i <= num; i++) {
         if (ULLONG_MAX / i < *ans) {
-            return OWERFLOW;
+            return OVERFLOW;
         }
         *ans *= i;
     }
@@ -166,8 +166,8 @@ int main(int argc, char** argv) {
         case OK:
             printf("%llu\n", ans);
             break;
-        case OWERFLOW:
-            printf("%s\n", Error_Names[OWERFLOW]);
+        case OVERFLOW:
+            printf("%s\n", Error_Names[OVERFLOW]);
             break;
         case WRONG_INP_PARAMETR:
             printf("%s\n", Error_Names[WRONG_INP_PARAMETR]);
@@ -183,8 +183,8 @@ int main(int argc, char** argv) {
         case OK:
             printf("%llu\n", ans);
             break;
-        case OWERFLOW:
-            printf("%s\n", Error_Names[OWERFLOW]);
+        case OVERFLOW:
+            printf("%s\n", Error_Names[OVERFLOW]);
             break;
         case WRONG_INP_PARAMETR:
             printf("%s\n", Error_Names[WRONG_INP_PARAMETR]);

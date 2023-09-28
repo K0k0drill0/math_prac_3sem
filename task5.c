@@ -4,11 +4,11 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define ull unsigned long long
+typedef unsigned long long ull;
 
 static char *Error_names[] = {
     "Error: wrong amount of arguments.",
-    "Error: wrong epsilone.",
+    "Error: wrong epsilon.",
     "Error: wrong argument(s)."
 };
 

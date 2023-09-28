@@ -3,6 +3,13 @@
 #include <ctype.h>
 #include <math.h>
 
+static char all_symbols[] = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+    'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+    'U', 'V', 'W', 'X', 'Y', 'Z'
+};
+
 static char *Error_names[] = {
     "Wrong amount of arguments.",
     "Wrong flag.",
@@ -13,61 +20,50 @@ enum Errors{
     ok = -1,
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_FLAG,
-    ENABLE_TO_OPEN_FILE
+    INABLE_TO_OPEN_FILE
 };
 
-int is_razd(char c) {
+int is_separator(char c) {
     return (c == ' ' || c == '\t' || c == '\n');
 }
 
 void wr_word(FILE* inp, FILE* outp, char *c) {
-    while (!is_razd(*c) && *c != EOF){
+    while (!is_separator(*c) && *c != EOF){
         putc(*c, outp);
         *c = getc(inp);
     }
     putc(' ', outp);
 }
 
-int decimal_to_quaternary(int decimal) {
-    int quaternary[32];
+void from_decimal(int decimal, int new_sn, char* ans) {
+    if (decimal == 0) {
+        ans[0] = '0';
+        ans[1] = '\0';
+        return;
+    }
     int i = 0;
     while (decimal > 0) {
-        int remainder = decimal % 4;
-        quaternary[i] = remainder;
+        char remainder = all_symbols[decimal % new_sn];
+        ans[i] = remainder;
         i++;
-        decimal /= 4;
+        decimal /= new_sn;
     }
-    int result = 0;
-    for (int j = 0; j < i; j++) {
-        result += quaternary[j] * (int)pow(10, j);
+    ans[i+1] = '\0';
+    for (int j = 0; j < (i+1)/2; j++) {
+        char tmp = ans[j];
+        ans[j] = ans[i-1-j];
+        ans[i-j] = tmp;
     }
-    return result;
-}
-
-int decimal_to_octal(int decimal) {
-    int octal[32];
-    int i = 0;
-    while (decimal > 0) {
-        int remainder = decimal % 8;
-        octal[i] = remainder;
-        i++;
-        decimal /= 8;
-    }
-    int result = 0;
-    for (int j = 0; j < i; j++) {
-        result += octal[j] * pow(10, j);
-    }
-    return result;
 }
 
 void func_r(FILE* inp1, FILE* inp2, FILE* outp) {
     char c1 = getc(inp1);
     char c2 = getc(inp2);
     while (c1 != EOF && c2 != EOF) {
-        while (is_razd(c1)) {
+        while (is_separator(c1)) {
             c1 = getc(inp1);
         }
-        while (is_razd(c2)) {
+        while (is_separator(c2)) {
             c2 = getc(inp2);
         }
         if (c1 == EOF && c2 == EOF) {
@@ -87,10 +83,13 @@ void func_r(FILE* inp1, FILE* inp2, FILE* outp) {
 }
 
 void first_cond(FILE* inp, FILE* outp, char* c) {
-    while (!is_razd(*c) && *c != EOF) {
+    while (!is_separator(*c) && *c != EOF) {
         if (isalpha(*c)) {
             *c = tolower(*c);
-            fprintf(outp, "%d", decimal_to_quaternary((int)*c));
+            char tmp[100];
+            from_decimal((int)*c, 4, tmp);
+            fputs(tmp, outp);
+            //fprintf(outp, "%d", decimal_to_quaternary((int)*c));
         }
         *c = getc(inp);
     }
@@ -98,7 +97,7 @@ void first_cond(FILE* inp, FILE* outp, char* c) {
 }
 
 void second_condition(FILE* inp, FILE* outp, char* c) {
-    while (!is_razd(*c) && *c != EOF){
+    while (!is_separator(*c) && *c != EOF){
         if (isalpha(*c)) {
             *c = tolower(*c);
         }
@@ -109,8 +108,11 @@ void second_condition(FILE* inp, FILE* outp, char* c) {
 }
 
 void third_condition(FILE* inp, FILE* outp, char* c) {
-    while (!is_razd(*c) && *c != EOF){
-        fprintf(outp, "%d", decimal_to_octal((int)*c));
+    while (!is_separator(*c) && *c != EOF){
+        char tmp[100];
+        from_decimal((int)*c, 8, tmp);
+        fputs(tmp, outp);
+        //fprintf(outp, "%d", decimal_to_octal((int)*c));
         *c = getc(inp);
     }
     putc(' ', outp);
@@ -121,7 +123,7 @@ void func_a(FILE* inp, FILE* outp) {
 
     char c = getc(inp);
     while (c != EOF) {
-        while (is_razd(c)) {
+        while (is_separator(c)) {
             c = getc(inp);
         }
         if (cnt != 0 && cnt % 10 == 0) {
@@ -167,8 +169,8 @@ void pr_errors(int num) {
     case WRONG_FLAG:
         printf("%s\n", Error_names[WRONG_FLAG]);
         break;
-    case ENABLE_TO_OPEN_FILE:
-        printf("%s\n", Error_names[ENABLE_TO_OPEN_FILE]);
+    case INABLE_TO_OPEN_FILE:
+        printf("%s\n", Error_names[INABLE_TO_OPEN_FILE]);
         break;
     default:
         break;
@@ -191,7 +193,7 @@ int main(int argc, char** argv) {
         inp2 = fopen(argv[3], "r");
         outp = fopen(argv[4], "w+");
         if (inp1 == NULL || inp2 == NULL || outp == NULL) {
-            pr_errors(ENABLE_TO_OPEN_FILE);
+            pr_errors(INABLE_TO_OPEN_FILE);
             fclose(inp1);
             fclose(inp2);
             fclose(outp);
@@ -203,7 +205,7 @@ int main(int argc, char** argv) {
         inp1 = fopen(argv[2], "r");
         outp = fopen(argv[3], "w+");
         if (inp1 == NULL || outp == NULL) {
-            pr_errors(ENABLE_TO_OPEN_FILE);
+            pr_errors(INABLE_TO_OPEN_FILE);
             fclose(inp1);
             fclose(outp);
             return -2;

@@ -68,41 +68,98 @@ void pr_solve(double eps, double a, double b, double c) {
     }
 }
 
+bool are_arrays_equal(double arr1[], double arr2[], int size, double eps) {
+    for (int i = 0; i < size; i++) {
+        if (fabs(arr1[i] - arr2[i]) >= eps) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void remove_duplicates(double arrays[][3], int num_arrays, double unique_arrays[][3], int* num_unique_arrays, double eps) {
+    for (int i = 0; i < num_arrays; i++) {
+        bool is_duplicate = false;
+        for (int j = 0; j < *num_unique_arrays; j++) {
+            if (are_arrays_equal(arrays[i], unique_arrays[j], 3, eps)) {
+                is_duplicate = true;
+                break;
+            }
+        }
+        if (!is_duplicate) {
+            for (int k = 0; k < 3; k++) {
+                unique_arrays[*num_unique_arrays][k] = arrays[i][k];
+            }
+            (*num_unique_arrays)++;
+        }
+    }
+}
+
+void swap(double* a, double* b) {
+    double temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void permute(double arr[], int start, int end, double result[][end+1], int* count) {
+    if (start == end) {
+        for (int i = 0; i <= end; i++) {
+            result[*count][i] = arr[i];
+        }
+        (*count)++;
+    } else {
+        for (int i = start; i <= end; i++) {
+            swap(&arr[start], &arr[i]);
+            permute(arr, start + 1, end, result, count);
+            swap(&arr[start], &arr[i]);
+        }
+    }
+}
+
 void func_q(double eps, double a, double b, double c) {
-    if (fabs(a-b) < eps && fabs(b-c) < eps && fabs(a-c) < eps) {
-        pr_solve(eps, a, b, c);
-    }
-    else if (fabs(a-b) < eps) {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, a, c, b);
-        pr_solve(eps, c, a, b); 
-    }
-    else if (fabs(a-c) < eps) {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, b, a, c);
-        pr_solve(eps, a, c, b);
-    }
-    else if (fabs(b-c) < eps) {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, b, a, c);
-        pr_solve(eps, c, b, a);
-    }
-    else {
-        pr_solve(eps, a, b, c);
-        pr_solve(eps, a, c, b);
-        pr_solve(eps, b, a, c);
-        pr_solve(eps, b, c, a);
-        pr_solve(eps, c, a, b);
-        pr_solve(eps, c, b, a);
+    double arr[3] = {a, b, c};
+    int arr_size = 3;
+    double all_permutations[6][3];
+    double unique_permutations[6][3];
+    int all_permutations_size = 0;
+    int unique_permutations_size = 0;
+
+    permute(arr, 0, arr_size-1, all_permutations, &all_permutations_size);
+    remove_duplicates(all_permutations, all_permutations_size, 
+    unique_permutations, &unique_permutations_size, eps);
+
+    for (int i = 0; i < unique_permutations_size; i++) {
+        pr_solve(eps, unique_permutations[i][0], unique_permutations[i][1],
+         unique_permutations[i][2]);
     }
 
-    // int coeff[3] = {a, b, c};
-    // for (int i = 0; i < 3; i++) {
-    //     swap(coeff, 0, 1);
-    //     pr_solve(eps, coeff[0], coeff[1], coeff[2]);
-    //     swap(coeff, 1, 2);
-    //     pr_solve(eps, coeff[0], coeff[1], coeff[2]);
+    // if (fabs(a-b) < eps && fabs(b-c) < eps && fabs(a-c) < eps) {
+    //     pr_solve(eps, a, b, c);
     // }
+    // else if (fabs(a-b) < eps) {
+    //     pr_solve(eps, a, b, c);
+    //     pr_solve(eps, a, c, b);
+    //     pr_solve(eps, c, a, b); 
+    // }
+    // else if (fabs(a-c) < eps) {
+    //     pr_solve(eps, a, b, c);
+    //     pr_solve(eps, b, a, c);
+    //     pr_solve(eps, a, c, b);
+    // }
+    // else if (fabs(b-c) < eps) {
+    //     pr_solve(eps, a, b, c);
+    //     pr_solve(eps, b, a, c);
+    //     pr_solve(eps, c, b, a);
+    // }
+    // else {
+    //     pr_solve(eps, a, b, c);
+    //     pr_solve(eps, a, c, b);
+    //     pr_solve(eps, b, a, c);
+    //     pr_solve(eps, b, c, a);
+    //     pr_solve(eps, c, a, b);
+    //     pr_solve(eps, c, b, a);
+    // }
+
 }
 
 bool func_m(double x, double y) {
@@ -135,6 +192,8 @@ bool is_float(char* str) {
 }
 
 int main(int argc, char** argv) {
+    func_q(0.01, 1, 1, 1);
+    return 0;
     if (strlen(argv[1]) != 2 || (argv[1][0] != '-' && argv[1][0] != '/') ||
     (argv[1][1] != 'q' && argv[1][1] != 'm' && argv[1][1] != 't')) {
         printf("%s\n", Error_text[WRONG_FLAG]);
