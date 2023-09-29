@@ -9,7 +9,8 @@ static char *Error_names[] = {
     "Wrong amount of arguments.",
     "Wrong flag.",
     "Can not open a file.",
-    "Invalid file."
+    "Invalid file.",
+    "Can not allocate memory."
 };
 
 enum Errors{
@@ -17,7 +18,8 @@ enum Errors{
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_FLAG,
     UNABLE_TO_OPEN_FILE, 
-    INVALID_FILE
+    INVALID_FILE, 
+    MEMORY_ISSUES
 };
 
 int is_separator(char c) {
@@ -116,12 +118,17 @@ int solve(FILE* inp, FILE* outp) {
     while (c != EOF) {
         while (is_separator(c)) {
             c = fgetc(inp);
+        }
+        if (c == EOF) {
             continue;
         }
 
         char* str_old;
-        int str_old_max_sz = 2;
+        int str_old_max_sz = 100;
         str_old = (char*)malloc(sizeof(char) * str_old_max_sz);
+        if (str_old == NULL) {
+            return MEMORY_ISSUES;
+        }
         str_old[0] = c;
         int str_ind = 0;
 
@@ -138,6 +145,9 @@ int solve(FILE* inp, FILE* outp) {
             else {
                 str_old_max_sz *= 2;
                 str_old = (char*)realloc(str_old, str_old_max_sz);
+                if (str_old == NULL) {
+                    return MEMORY_ISSUES;
+                }
                 str_old[str_ind] = c;
                 int tmp = which_number(c);
                 if (tmp > notation) notation = tmp;
@@ -191,13 +201,27 @@ int main(int argc, char** argv) {
         return -2;
     }
 
-    if (solve(inp, outp) == INVALID_FILE) {
+    switch (solve(inp, outp))
+    {
+    case INVALID_FILE:
         fclose(inp);
         fclose(outp);
         printf("%s\n", Error_names[INVALID_FILE]);
         return 1;
+        break;
+    case MEMORY_ISSUES:
+        fclose(inp);
+        fclose(outp);
+        printf("%s\n", Error_names[MEMORY_ISSUES]);
+        return 1;
+        break;
+    case ok:
+        fclose(inp);
+        fclose(outp);
+        return 0;
+        break;
+    default:
+        break;
     }
-    fclose(inp);
-    fclose(outp);
-    return 0;
+    
 }
