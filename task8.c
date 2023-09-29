@@ -8,14 +8,16 @@
 static char *Error_names[] = {
     "Wrong amount of arguments.",
     "Wrong flag.",
-    "Can not open a file."
+    "Can not open a file.",
+    "Invalid file."
 };
 
 enum Errors{
     ok = -1,
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_FLAG,
-    INABLE_TO_OPEN_FILE
+    INABLE_TO_OPEN_FILE, 
+    INVALID_FILE
 };
 
 int is_separator(char c) {
@@ -26,23 +28,90 @@ int which_number(char c) {
     if (isdigit(c)) {
         return (int)c - 48;
     }
-    c = toupper(c);
-    return (int)c - 55;
-}
-
-int to_decimal(char *str_old, int old_size, int notation) {
-    int num_new = 0;
-    int base_power = 1;
-    for (int i = old_size - 1; i >= 0; i--) {
-        int dig = which_number(str_old[i]);
-
-        num_new += base_power * dig;
-        base_power *= notation;
+    if (isalpha(c)) {
+        c = toupper(c);
+        return (int)c - 55;
     }
-    return num_new;
+    return -1;
 }
 
-void solve(FILE* inp, FILE* outp) {
+bool is_float(char* str) {
+    int n = strlen(str);
+    if (which_number(str[0]) < 0 && str[0] != '-') return false;
+    int dot_cnt = 0;
+    for (int i = 1; i < n; i++) {
+        if (which_number(str[i]) < 0) {
+            if (str[i] == '.') dot_cnt++;
+            else return false;
+            if (dot_cnt > 1) return false;
+        }
+    }
+    return true;
+}
+
+double to_decimal(char* num, int len, int base) {
+    double decimal = 0;
+    //int len = strlen(num);
+    int is_negative = 0;
+    int decimal_point_index = -1;
+    
+    // Check if number is negative
+    if (num[0] == '-') {
+        is_negative = 1;
+        //memmove(num, num+1, len); // Remove negative sign from string
+        //len--;
+    }
+    
+    // Check if number has a decimal point
+    for (int i = 0; i < len; i++) {
+        if (num[i] == '-') continue;
+        if (num[i] == '.') {
+            decimal_point_index = i;
+            break;
+        }
+    }
+    
+    // Convert integer part of number to decimal
+	int base_power = 1;
+    for (int i = (decimal_point_index == -1 ? len-1 : decimal_point_index-1); i >= 0; i--) {
+        if (num[i] == '-') continue;
+        int digit = which_number(num[i]);
+        decimal += digit * base_power;
+        base_power *= base;
+    }
+    
+    // Convert fractional part of number to decimal
+    if (decimal_point_index != -1) {
+        double base_power = 1.0/(double)base;
+        for (int i = decimal_point_index+1; i < len; i++) {
+            if (num[i] == '-') continue;
+            int digit = which_number(num[i]);;
+            decimal += (double)digit * base_power;
+            base_power /= base;
+        }
+    }
+    
+    // Add negative sign if necessary
+    if (is_negative) {
+        decimal *= -1;
+    }
+    
+    return decimal;
+}
+
+// int to_decimal(char *str_old, int old_size, int notation) {
+//     int num_new = 0;
+//     int base_power = 1;
+//     for (int i = old_size - 1; i >= 0; i--) {
+//         int dig = which_number(str_old[i]);
+
+//         num_new += base_power * dig;
+//         base_power *= notation;
+//     }
+//     return num_new;
+// }
+
+int solve(FILE* inp, FILE* outp) {
     char c = fgetc(inp);
     while (c != EOF) {
         while (is_separator(c)) {
@@ -51,7 +120,7 @@ void solve(FILE* inp, FILE* outp) {
         }
 
         char* str_old;
-        int str_old_max_sz = 100;
+        int str_old_max_sz = 2;
         str_old = (char*)malloc(sizeof(char) * str_old_max_sz);
         str_old[0] = c;
         int str_ind = 0;
@@ -69,6 +138,9 @@ void solve(FILE* inp, FILE* outp) {
             else {
                 str_old_max_sz *= 2;
                 str_old = (char*)realloc(str_old, str_old_max_sz);
+                str_old[str_ind] = c;
+                int tmp = which_number(c);
+                if (tmp > notation) notation = tmp;
             }
             c = fgetc(inp);
         }
@@ -76,7 +148,9 @@ void solve(FILE* inp, FILE* outp) {
         str_old[str_ind] = '\0';
         notation++;
 
-        int num_new = to_decimal(str_old, str_ind, notation);
+        if (!is_float(str_old)) return INVALID_FILE;
+
+        double num_new = to_decimal(str_old, str_ind, notation);
 
         bool flag = true;
         for (int i = 0; i < str_ind; i++) {
@@ -89,9 +163,10 @@ void solve(FILE* inp, FILE* outp) {
             fputc(str_old[i], outp);
         }
 
-        fprintf(outp, " %d %d ", notation, num_new);
+        fprintf(outp, " %d %lf ", notation, num_new);
         free(str_old);
     }
+    return ok;
 }
 
 
@@ -106,6 +181,9 @@ int main(int argc, char** argv) {
     inp = fopen(argv[1], "r");
     outp = fopen(argv[2], "w+");
 
+    // inp = fopen("input.txt", "r");
+    // outp = fopen("output.txt", "w+");
+
     if (inp == NULL || outp == NULL) {
         fclose(inp);
         fclose(outp);
@@ -113,6 +191,13 @@ int main(int argc, char** argv) {
         return -2;
     }
 
-    solve(inp, outp);
+    if (solve(inp, outp) == INVALID_FILE) {
+        fclose(inp);
+        fclose(outp);
+        printf("%s\n", Error_names[INVALID_FILE]);
+        return 1;
+    }
+    fclose(inp);
+    fclose(outp);
     return 0;
 }
