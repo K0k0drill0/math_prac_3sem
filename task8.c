@@ -85,7 +85,7 @@ double to_decimal(char* num, int len, int base) {
         double base_power = 1.0/(double)base;
         for (int i = decimal_point_index+1; i < len; i++) {
             //if (num[i] == '-') continue;
-            int digit = which_number(num[i]);;
+            int digit = which_number(num[i]);
             decimal += (double)digit * base_power;
             base_power /= base;
         }
