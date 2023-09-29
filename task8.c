@@ -16,7 +16,7 @@ enum Errors{
     ok = -1,
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_FLAG,
-    INABLE_TO_OPEN_FILE, 
+    UNABLE_TO_OPEN_FILE, 
     INVALID_FILE
 };
 
@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
     if (inp == NULL || outp == NULL) {
         fclose(inp);
         fclose(outp);
-        printf("%s\n", Error_names[INABLE_TO_OPEN_FILE]);
+        printf("%s\n", Error_names[UNABLE_TO_OPEN_FILE]);
         return -2;
     }
 
