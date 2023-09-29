@@ -20,7 +20,7 @@ enum Errors{
     ok = -1,
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_FLAG,
-    INABLE_TO_OPEN_FILE
+    UNABLE_TO_OPEN_FILE
 };
 
 int is_separator(char c) {
@@ -169,8 +169,8 @@ void pr_errors(int num) {
     case WRONG_FLAG:
         printf("%s\n", Error_names[WRONG_FLAG]);
         break;
-    case INABLE_TO_OPEN_FILE:
-        printf("%s\n", Error_names[INABLE_TO_OPEN_FILE]);
+    case UNABLE_TO_OPEN_FILE:
+        printf("%s\n", Error_names[UNABLE_TO_OPEN_FILE]);
         break;
     default:
         break;
@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
         inp2 = fopen(argv[3], "r");
         outp = fopen(argv[4], "w+");
         if (inp1 == NULL || inp2 == NULL || outp == NULL) {
-            pr_errors(INABLE_TO_OPEN_FILE);
+            pr_errors(UNABLE_TO_OPEN_FILE);
             fclose(inp1);
             fclose(inp2);
             fclose(outp);
@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
         inp1 = fopen(argv[2], "r");
         outp = fopen(argv[3], "w+");
         if (inp1 == NULL || outp == NULL) {
-            pr_errors(INABLE_TO_OPEN_FILE);
+            pr_errors(UNABLE_TO_OPEN_FILE);
             fclose(inp1);
             fclose(outp);
             return -2;
