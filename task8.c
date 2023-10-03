@@ -60,8 +60,6 @@ double to_decimal(char* num, int len, int base) {
     // Check if number is negative
     if (num[0] == '-') {
         is_negative = 1;
-        //memmove(num, num+1, len); // Remove negative sign from string
-        //len--;
     }
     
     // Check if number has a decimal point
@@ -144,10 +142,13 @@ int solve(FILE* inp, FILE* outp) {
             }
             else {
                 str_old_max_sz *= 2;
-                str_old = (char*)realloc(str_old, str_old_max_sz);
-                if (str_old == NULL) {
+                char* tmp_str;
+                if (!(tmp_str = (char*)realloc(str_old, str_old_max_sz)))
+                {
+                    free(str_old);
                     return MEMORY_ISSUES;
                 }
+                str_old = tmp_str;
                 str_old[str_ind] = c;
                 int tmp = which_number(c);
                 if (tmp > notation) notation = tmp;
@@ -163,6 +164,7 @@ int solve(FILE* inp, FILE* outp) {
         double num_new = to_decimal(str_old, str_ind, notation);
 
         bool flag = true;
+        bool is_anything_outputed = false;
         for (int i = 0; i < str_ind; i++) {
             if (flag && str_old[i] == '0') {
                 continue;
@@ -171,9 +173,12 @@ int solve(FILE* inp, FILE* outp) {
                 flag = false;
             }
             fputc(str_old[i], outp);
+            if (str_old[i] != '-') is_anything_outputed = true;
         }
-
-        fprintf(outp, " %d %lf ", notation, num_new);
+        if (!is_anything_outputed) {
+            fputc('0', outp);
+        }
+        fprintf(outp, " %d %lf\n", notation, num_new);
         free(str_old);
     }
     return ok;

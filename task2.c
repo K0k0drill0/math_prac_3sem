@@ -254,6 +254,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    //char* epsilon = "-0;12";
+
     if (!is_float(argv[1])) {
         printf("%s\n", Error_names[WRONG_EPS]);
         return 1;

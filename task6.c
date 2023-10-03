@@ -6,7 +6,7 @@
 
 typedef unsigned long long ull;
 
-static char *Error_names[] = {
+const char *Error_names[] = {
     "Error: wrong amount of arguments.",
     "Error: wrong epsilon.",
     "Error: wrong argument(s)."
@@ -135,8 +135,6 @@ double integral_d(double eps) {
 } 
 
 int main(int argc, char** argv) {
-    // double eps = 0.;
-    // printf("%lf\n", integral_a(0, 1, eps));
     if (argc != 2) {
         printf("%s\n", Error_names[WRONG_AMOUNT_OF_ARGUMENTS]);
         return 1;
@@ -153,10 +151,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    printf("Integral a = %lf\n", integral_a(eps));
-    printf("Integral b = %lf\n", integral_b(eps));
-    printf("Integral c = %lf\n", integral_c(eps));
-    printf("Integral d = %lf\n", integral_d(eps));
+    printf("Integral a = %.15lf\n", integral_a(eps));
+    printf("Integral b = %.15lf\n", integral_b(eps));
+    printf("Integral c = %.15lf\n", integral_c(eps));
+    printf("Integral d = %.15lf\n", integral_d(eps));
 
     return 0;
 }

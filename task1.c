@@ -30,7 +30,7 @@ int func_h(int num) {
 }
 
 int func_p(int num) {
-    if (num <= 0) {
+    if (num <= 1) {
         return -1;
     }
     if (num == 2) return 1;

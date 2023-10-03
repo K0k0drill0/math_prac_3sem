@@ -165,8 +165,10 @@ bool is_float(char* str) {
 }
 
 int main(int argc, char** argv) {
-    func_q(0.01, 1, 1, 1);
-    return 0;
+    if (argc != 4 && argc != 6) {
+        printf("%s\n", Error_text[WRONG_AMOUNG_OF_ARGUMENTS]);
+        return 1;
+    }
     if (strlen(argv[1]) != 2 || (argv[1][0] != '-' && argv[1][0] != '/') ||
     (argv[1][1] != 'q' && argv[1][1] != 'm' && argv[1][1] != 't')) {
         printf("%s\n", Error_text[WRONG_FLAG]);
@@ -186,11 +188,12 @@ int main(int argc, char** argv) {
             printf("%s\n", Error_text[WRONG_ARGUMENTS]);
             return 1;
          }
-        if (atof(argv[2]) <= 0.0) {
+        double eps = atof(argv[2]);
+        if (eps <= 0.0) {
             printf("%s\n", Error_text[WRONG_EPSILON]);
             return 1;
         }
-        func_q(atof(argv[2]), atof(argv[3]), atof(argv[4]), atof(argv[5]));
+        func_q(eps, atof(argv[3]), atof(argv[4]), atof(argv[5]));
         break;
     case 'm':
         if (!is_float(argv[2]) || !is_float(argv[3])) {

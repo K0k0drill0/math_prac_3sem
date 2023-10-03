@@ -61,7 +61,7 @@ void func_a(FILE* inp, FILE* outp)  {
     char c = fgetc(inp);
     char pr_am[50];
     while (c != EOF) {
-        if (!isalpha(c) && !isdigit(c) && c != ' ') {
+        if (!isdigit(c)) {
             char new[100];
             sprintf(new, "%X", (int)c);
             fputs(new, outp);
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     FILE* inp;
     FILE* outp;
     inp = fopen(argv[2], "r");
-    if (inp == NULL) {
+    if (!inp) {
         printf("Error: opening file.\n");
         return -2;
     }

@@ -6,97 +6,71 @@
 
 typedef unsigned long long ull;
 
-static char *Error_names[] = {
+const char *Error_names[] = {
     "Error: wrong amount of arguments.",
     "Error: wrong epsilon.",
-    "Error: wrong argument(s)."
+    "Error: wrong argument(s).",
+    "Error: wrong x."
 };
 
 enum Errors{
     ok = -1,
     WRONG_AMOUNT_OF_ARGUMENTS,
     WRONG_EPS,
-    WRONG_ARGUMENTS
+    WRONG_ARGUMENTS,
+    WRONG_X
 };
 
 double fsum_a(double eps, double x) {
+    double sum = 1.0;
+    double res2 = 0;
     int n = 0;
-    int n_fact = 1;
-    double x_pow = 1;
-    double res1 = x_pow/n_fact;
-    double res2 = res1;
     do {
+        res2 += sum;
         n++;
-        n_fact *= n;
-        x_pow *= x;
-        res1 = res2;
-        res2 += (x_pow / (double)n_fact);
-    } while (fabs(res1-res2) > eps);
+        sum *= (x / n);
+    } while (fabs(sum) >= eps);
     return res2;
-}
+} 
 
 double fsum_b(double eps, double x) {
+    double ans = 0;
     int n = 0;
-    int m_one_pow = 1;
-    int tn_fact = 1;
-    double x_pow = 1;
-    double res1 = (double)m_one_pow * x_pow * x_pow / (double)tn_fact;
-    double res2 = res1;
-    double pl_res;
+    double sum = 1;
     do {
+        ans += sum;
         n++;
-        m_one_pow *= -1;
-        x_pow *= x;
-        tn_fact = tn_fact * (2 * n - 1) * (2 * n);
-        res1 = res2;
-        pl_res = (double)m_one_pow * x_pow * x_pow / (double)tn_fact;
-        res2 += pl_res;
-    } while (fabs(res1-res2) > eps);
-    return res2;
+        sum *= (- x * x) / ((2.0 * n) * (2.0 * n - 1.0));
+    } while (fabs(sum) >= eps);
+    return ans;
 }
 
 double fsum_c(double eps, double x) {
     int n = 0;
-    ull three_pow = 1;
-    double n_fac = 1;
-    double x_pow = 1;
-    double tn_fac = 1;
-    double res1 = pow(three_pow, 3) * pow(n_fac, 3) * pow(x_pow, 2) / tn_fac;
-    double res2 = res1;
-    double pl_res;
+    double sum = 1;
+    double ans = 0;
+    double three_2 = 9.0;
+    double x_2 = x * x;
     do {
-        n++;
-        n_fac *= n;
-        x_pow *= x;
-        three_pow *= 3;
-        tn_fac = tn_fac * (3 * n - 2) * (3 * n - 1) * (3 * n); 
-        res1 = res2;
-        pl_res = pow(three_pow, 3) * pow(n_fac, 3) * pow(x_pow, 2) / tn_fac;
-        res2 += pl_res;
-    } while (fabs(res1-res2) > eps);
-    return res2;
+        ans += sum;
+        sum *= (three_2 * x_2 * (n + 1.0) * (n + 1.0)) / ((3.0 * n + 1.0) * (3.0 * n + 2.0));
+        n++; 
+    } while (fabs(sum) >= eps);
+    return ans;
 }
 
 double fsum_d(double eps, double x) {
     int n = 1;
-    int m_one_pow = -1;
-    double odd_fac = 1;
-    double even_fac = 2;
-    double x_pow = x;
-    double pl_res;
-    double res1 = m_one_pow * odd_fac * x_pow * x_pow / even_fac;
-    double res2 = res1;
-    do {
-        n++;
-        m_one_pow *= -1;
-        odd_fac *= 2 * n - 1;
-        even_fac *= 2 * n;
-        x_pow *= x;
-        pl_res = m_one_pow * odd_fac * x_pow * x_pow / even_fac;
-        res1 = res2;
-        res2 += pl_res;
-    } while (fabs(res1-res2) > eps);
-    return res2;
+	double ans = 0, sum = -x*x / 2;
+	do
+	{
+		ans += sum;
+		++n;
+		sum *= -(2.0*n - 1) * x*x / (2.0*n);
+		
+	} while (fabs(sum) >= eps);
+	
+	return ans;
 }
 
 bool is_float(char* str) {
@@ -114,36 +88,33 @@ bool is_float(char* str) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
+    if (argc != 3) {
         printf("%s\n", Error_names[WRONG_AMOUNT_OF_ARGUMENTS]);
         return 1;
     }
 
-    if (!is_float(argv[1])) {
+    if (!is_float(argv[1]) || !is_float(argv[2])) {
         printf("%s\n", Error_names[WRONG_ARGUMENTS]);
         return 1;
     }
 
+    double x = atof(argv[2]);
     double eps = atof(argv[1]);
     if (eps <= 0.0) {
         printf("%s\n", Error_names[WRONG_EPS]);
         return 1;
     }
 
-    double x;
-    printf("Input the x.\n");
-    scanf("%lf", &x);
-
-    printf("sum_a = %f\n", fsum_a(eps, x));
-    printf("sum_b = %f\n", fsum_b(eps, x));
+    printf("sum_a = %.10f\n", fsum_a(eps, x));
+    printf("sum_b = %.10f\n", fsum_b(eps, x));
     if (fabs(x) < 1.0) {
-        printf("sum_c = %f\n", fsum_c(eps, x));
+        printf("sum_c = %.10f\n", fsum_c(eps, x));
     }
     else {
         printf("The series c converges only at |x| < 1\n");
     }
     if (fabs(x) <= 1.0) {
-        printf("sum_d = %f\n", fsum_d(eps, x));
+        printf("sum_d = %.10f\n", fsum_d(eps, x));
     }
     else {
         printf("The series d converges only at |x| <= 1\n");
