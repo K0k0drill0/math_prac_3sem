@@ -21,32 +21,32 @@ enum Errors{
 
 void quick_sort(int *numbers, int left, int right)
 {
-    int pivot; // разрешающий элемент
-    int l_hold = left; //левая граница
-    int r_hold = right; // правая граница
+    int pivot; 
+    int l_hold = left; 
+    int r_hold = right; 
     pivot = numbers[left];
-    while (left < right) // пока границы не сомкнутся
+    while (left < right) 
     {
         while ((numbers[right] >= pivot) && (left < right))
-            right--; // сдвигаем правую границу пока элемент [right] больше [pivot]
-        if (left != right) // если границы не сомкнулись
+            right--; 
+        if (left != right) 
         {
-            numbers[left] = numbers[right]; // перемещаем элемент [right] на место разрешающего
-            left++; // сдвигаем левую границу вправо
+            numbers[left] = numbers[right]; 
+            left++; 
         }
         while ((numbers[left] <= pivot) && (left < right))
-            left++; // сдвигаем левую границу пока элемент [left] меньше [pivot]
-        if (left != right) // если границы не сомкнулись
+            left++; 
+        if (left != right) 
         {
-            numbers[right] = numbers[left]; // перемещаем элемент [left] на место [right]
-            right--; // сдвигаем правую границу влево
+            numbers[right] = numbers[left]; 
+            right--;
         }
     }
-    numbers[left] = pivot; // ставим разрешающий элемент на место
+    numbers[left] = pivot;
     pivot = left;
     left = l_hold;
     right = r_hold;
-    if (left < pivot) // Рекурсивно вызываем сортировку для левой и правой части массива
+    if (left < pivot)
         quick_sort(numbers, left, pivot - 1);
     if (right > pivot)
         quick_sort(numbers, pivot + 1, right);
@@ -54,7 +54,7 @@ void quick_sort(int *numbers, int left, int right)
 
 int bs_lower_bound(int a[], int n, int x) {
     int l = 0;
-    int h = n; // Not n - 1
+    int h = n; 
     while (l < h) {
         int mid =  l + (h - l) / 2;
         if (x <= a[mid]) {
@@ -89,8 +89,8 @@ void fill_C(int c[], int a[], int b[], int arr_size) {
 
 int main(int argc, char** argv) {
     srand(time(NULL));
-    //int arr_size = rand() % 10000 + 10;
-    int arr_size = 10;
+    int arr_size = rand() % 10000 + 10;
+    //int arr_size = 10;
 
     int* A;
     int* B;
@@ -107,25 +107,33 @@ int main(int argc, char** argv) {
     }
 
     for (int i = 0; i < arr_size; i++) {
-        A[i] = rand() % 20 - 10;
-        B[i] = rand() % 20 - 10;
+        A[i] = rand() % 2001 - 1000;
+        B[i] = rand() % 2001 - 1000;
     }
 
     quick_sort(B, 0, arr_size-1);
     fill_C(C, A, B, arr_size);
 
+    printf("Array A: ");
     for (int i = 0; i < arr_size; i++) {
         printf("%d ", A[i]);
     }
     printf("\n");
 
+    printf("Array B: ");
     for (int i = 0; i < arr_size; i++) {
         printf("%d ", B[i]);
     }
     printf("\n");
 
+    printf("Array C: ");
     for (int i = 0; i < arr_size; i++) {
         printf("%d ", C[i]);
     }
     printf("\n");
+
+    free(A);
+    free(B);
+    free(C);
+    return 0;
 }

@@ -85,9 +85,14 @@ int to_decimal(char *str_old, int *num_new, int notation) {
     return ok;
 }
 
-int from_decimal(int decimal, int new_sn, char** ans) {
+int from_decimal(int decimal, int new_sn, char** ans) {  
     int arr_size = 0;
     int sign = 1;
+
+    if (new_sn < 2 || new_sn > 36) {
+        return WRONG_BASE;
+    }
+
     if (decimal < 0) {
         sign = -1;
         arr_size++;
@@ -129,7 +134,7 @@ int from_decimal(int decimal, int new_sn, char** ans) {
         (*ans)[j] = (*ans)[i-j-1];
         (*ans)[i-j-1] = tmp;
     }
-    //printf("%s\n", *ans);
+    printf("%s\n", *ans);
     return ok;
 }
 
@@ -179,7 +184,6 @@ int read_line(char** str_inp) {
             arr_max_size *= 2;
             char *tmp = (char*)realloc(*str_inp, arr_max_size * sizeof(char));
             if (tmp == NULL) {
-                free(tmp);
                 free(str_inp);
                 return MEMORY_ISSUES;
             }
@@ -267,6 +271,7 @@ void print_error(int st) {
  
 int main(void)
 {
+    printf("Input base.\n");
     int base;
     scanf("%d", &base);
     if (base < 2 || base > 36) {

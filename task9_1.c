@@ -4,8 +4,9 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
-const int ARR_SIZE = 10;
+//const int ARR_SIZE = 10;
 const int INF = 1e9;
 
 static char *Error_names[] = {
@@ -20,11 +21,11 @@ enum Errors{
 };
 
 void solve(int* arr) {
-    int max_num = 0;
-    int min_num = INF;
+    int max_num = arr[0];
+    int min_num = arr[0];
     int max_ind = 0;
     int min_ind = 0;
-    for (int i = 0; i < ARR_SIZE; i++) {
+    for (int i = 1; i < ARR_SIZE; i++) {
         if (arr[i] > max_num) {
             max_num = arr[i];
             max_ind = i;
@@ -37,10 +38,15 @@ void solve(int* arr) {
     int tmp = arr[min_ind];
     arr[min_ind]  = arr[max_ind];
     arr[max_ind] = tmp;
+    // a b
+    // a ^= b;
+    // b ^= a;
+    // a ^= b;
 }
 
 bool is_int(char* str) {
-    for (int i = 0; i < strlen(str); i++) {
+    int n = strlen(str);
+    for (int i = 0; i < n; i++) {
         if (!isdigit(str[i])) {
             if (i == 0 && str[i] == '-') {
                 continue;
@@ -49,6 +55,8 @@ bool is_int(char* str) {
         }
     }
     return 1;
+    //sscanf
+    //TODO
 }
 
 int valid_argc(int argc, char** argv) {
@@ -63,6 +71,9 @@ int valid_argc(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    const int ARR_SIZE = 10;
+
+    srand(time(NULL));
     switch (valid_argc(argc, argv))
     {
     case WRONG_AMOUNT_OF_ARGUMENTS:
@@ -80,19 +91,23 @@ int main(int argc, char** argv) {
     int a = atoi(argv[1]);
     int b = atoi(argv[2]);
     int arr[ARR_SIZE];
-    // for (int i = 0; i < ARR_SIZE; i++) {
-    //     arr[i] = rand() % (b) + a;
-    // }
-    // for (int i = 0; i < ARR_SIZE; i++) {
-    //     printf("%d ", arr[i]);
-    // }
-    // printf("\n");
-    // solve(arr);
-    // for (int i = 0; i < ARR_SIZE; i++) {
-    //     printf("%d ", arr[i]);
-    // }
+    for (int i = 0; i < ARR_SIZE; i++) {
+        arr[i] = rand() % (b-a+1) + a;
+    }
 
-    solve(arr);
-    
+    printf("Array before: ");
+    for (int i = 0; i < ARR_SIZE; i++) {
+        printf("%d ", arr[i]);
+    }
     printf("\n");
+
+    solve(arr, ARR_SIZE);
+
+    printf("Array after: ");
+    for (int i = 0; i < ARR_SIZE; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    return 0;
 }
