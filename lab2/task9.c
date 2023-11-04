@@ -71,7 +71,7 @@ char* has_fin_more(int base, int amount, ...) {
 }
 
 int main() {
-    char* ans = has_fin_more(5, 3, 0.1, 0.2, 0.3);
+    char* ans = has_fin_more(3, 3, 0.75, 0.2, 0.3);
     printf("is finite: %s\n", ans);
     free(ans);
     return 0;

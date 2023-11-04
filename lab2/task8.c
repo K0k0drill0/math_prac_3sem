@@ -149,7 +149,7 @@ int sum(char** ans, int base, int n, ...) {
 
 int main() {
     char* ans = NULL;
-    int st = sum(&ans, 2, 3, "00", "00111111111111111111111111111111", "1");
+    int st = sum(&ans, 2, 2, "00", "000000000000001");
     if (st != ok ){
         print_error(st);
         free(ans);
