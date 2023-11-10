@@ -15,6 +15,9 @@ void print_error(int st) {
     case INVALID_INPUT:
         printf("Invalid input!\n");
         break;
+    case OVERFLOWED:
+        printf("Overflowed!\n");
+        break;
     default:
         break;
     }
