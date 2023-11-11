@@ -12,7 +12,8 @@ enum status_code {
     ok,
     MEMORY_ISSUES, 
     INVALID_FUNCTION_ARGUMENT, 
-    INVALID_INPUT
+    INVALID_INPUT,
+    OVERFLOWED
 };
 
 void print_error(int st);
