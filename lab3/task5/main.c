@@ -21,56 +21,55 @@ enum status_codes {
     INVALID_INPUT
 };
 
-void print_error(int st);
+void print_error(const int st);
 void student_create(Student* stud, unsigned int id, char* name, char* surname,
  char* group, unsigned char* grades);
 void student_free(Student* stud);
 int get_student_from_file(FILE* inp, Student* stud);
-int is_separator(char c);
+int is_separator(const char c);
 int get_word_from_file(FILE* inp, char** str_inp);
-void free_everything(int amount, ...);
-int is_valid_uint(char* str);
-int is_valid_grades(char* grades);
-int is_valid_name(char* name);
+void free_everything(const unsigned int amount, ...);
+int is_valid_uint(const char* str);
+int is_valid_grades(const char* grades);
+int is_valid_name(const char* name);
 int create_students_arr(FILE* inp, Student** students_arr,
  int* students_arr_tmp_size, int* students_arr_max_size);
-void print_students_arr(FILE* trass, Student* arr, int size, void (*printer)(FILE*, Student));
-void print_student(FILE* trass, Student stud);
-void free_students_arr(Student* arr, int size);
-int are_equal_id(Student stud, void* id);
-int are_equal_name(Student stud, void* name);
-int are_equal_surname(Student stud, void* surname);
-int are_equal_group(Student stud, void* group);
-int find_by_param(Student* students_arr, int students_arr_tmp_size,
-Student** result, int* res_size, int* res_max_size, void* info, int (*comp)(Student, void*));
-int find_from_user(FILE* trass, Student* students_arr, int students_arr_tmp_size);
-int student_copy(Student* s1, Student* s2);
+void print_students_arr(FILE* trass, const Student* arr, const unsigned int size, void (*printer)(FILE*, Student));
+void print_student(FILE* trass, const Student stud);
+void free_students_arr(Student* arr, unsigned int size);
+int are_equal_id(const Student stud, const void* id);
+int are_equal_name(const Student stud, const void* name);
+int are_equal_surname(const Student stud, const void* surname);
+int are_equal_group(const Student stud, const void* group);
+int find_by_param(const Student* students_arr, const unsigned int students_arr_tmp_size,
+Student** result, int* res_size, int* res_max_size, const void* info, int (*comp)(const Student, const void*));
+int find_from_user(FILE* trass, const Student* students_arr, const unsigned int students_arr_tmp_size);
+int student_copy(Student* s1, const Student* s2);
 int compare_by_id(const void* s1, const void* s2);
 int compare_by_name(const void* s1, const void* s2);
 int compare_by_surname(const void* s1, const void* s2);
 int compare_by_group(const void* s1, const void* s2);
-int sort_from_user(FILE* trass, Student* students_arr, int students_arr_tmp_size);
+int sort_from_user(FILE* trass, Student* students_arr, const unsigned int students_arr_tmp_size);
 void print_menu();
-void print_students_with_good_grades(FILE* trass, Student* students_arr, int students_arr_tmp_size);
-void print_for_find(FILE* trass, Student stud);
-void print_for_good_stud(FILE* trass, Student stud);
+void print_students_with_good_grades(FILE* trass, const Student* students_arr, const unsigned int students_arr_tmp_size);
+void print_for_find(FILE* trass, const Student stud);
+void print_for_good_stud(FILE* trass, const Student stud);
 
 
 int main(int argc, char** argv) {
-    argc = 3;
-    argv[1] = "input.txt";
-    argv[2] = "output.txt";
-
     if (argc != 3) {
         print_error(INVALID_ARGUMENTS);
         return 1;
     }
 
     FILE* inp = fopen(argv[1], "r");
+    if (!inp) {
+        print_error(UNABLE_TO_OPEN_A_FILE);
+        return -1;
+    }
     FILE* outp = fopen(argv[2], "w+");
-    if (!inp || !outp) {
+    if (!outp) {
         fclose(inp);
-        fclose(outp);
         print_error(UNABLE_TO_OPEN_A_FILE);
         return -1;
     }
@@ -174,7 +173,7 @@ void print_menu() {
     // printf("\n");
 }
 
-void print_students_with_good_grades(FILE* trass, Student* students_arr, int students_arr_tmp_size) {
+void print_students_with_good_grades(FILE* trass, const Student* students_arr, const unsigned int students_arr_tmp_size) {
     double grades_sum = 0.0;
     for (int i = 0; i < students_arr_tmp_size; i++) {
         for (int j = 0; j < 5; j++) {
@@ -195,7 +194,7 @@ void print_students_with_good_grades(FILE* trass, Student* students_arr, int stu
     }
 }
 
-int sort_from_user(FILE* trass, Student* students_arr, int students_arr_tmp_size) {
+int sort_from_user(FILE* trass, Student* students_arr, const unsigned int students_arr_tmp_size) {
     printf("Input needed parameter!\n");
     char* q = NULL;
     int st = get_word_from_file(stdin, &q);
@@ -226,7 +225,7 @@ int sort_from_user(FILE* trass, Student* students_arr, int students_arr_tmp_size
     return ok;
 }
 
-int find_from_user(FILE* trass, Student* students_arr, int students_arr_tmp_size) {
+int find_from_user(FILE* trass, const Student* students_arr, const unsigned int students_arr_tmp_size) {
     printf("Input needed parameter!\n");
     char* q = NULL;
     int st = get_word_from_file(stdin, &q);
@@ -327,8 +326,8 @@ int find_from_user(FILE* trass, Student* students_arr, int students_arr_tmp_size
     return ok;
 }
 
-int find_by_param(Student* students_arr, int students_arr_tmp_size,
-Student** result, int* res_size, int* res_max_size, void* info, int (*comp)(Student, void*)) {
+int find_by_param(const Student* students_arr, const unsigned int students_arr_tmp_size,
+Student** result, int* res_size, int* res_max_size, const void* info, int (*comp)(const Student, const void*)) {
     for (int i = 0; i < students_arr_tmp_size; i++) {
         if (comp(students_arr[i], info)) {
             if (*res_size == *res_max_size) {
@@ -351,22 +350,22 @@ Student** result, int* res_size, int* res_max_size, void* info, int (*comp)(Stud
     return ok;
 }
 
-int are_equal_id(Student stud, void* id) {
+int are_equal_id(const Student stud, const void* id) {
     unsigned int *el = (unsigned int*)id;
     return (stud.id == *el) ? 1 : 0;
 }
 
-int are_equal_name(Student stud, void* name) {
+int are_equal_name(const Student stud, const void* name) {
     char* name_str = (char*)name;
     return (strcmp(name_str, stud.name) == 0) ? 1 : 0;
 }
 
-int are_equal_surname(Student stud, void* surname) {
+int are_equal_surname(const Student stud, const void* surname) {
     char* name_str = (char*)surname;
     return (strcmp(name_str, stud.surname) == 0) ? 1 : 0;
 }
 
-int are_equal_group(Student stud, void* group) {
+int are_equal_group(const Student stud, const void* group) {
     char* name_str = (char*)group;
     return (strcmp(name_str, stud.group) == 0) ? 1 : 0;
 }
@@ -387,7 +386,7 @@ int compare_by_group(const void* s1, const void* s2) {
     return strcmp(((Student*)s1)->group, ((Student*)s2)->group);
 }
 
-int is_separator(char c) {
+int is_separator(const char c) {
     return (c == ' ' || c == '\t' || c == '\n'); 
 }
 
@@ -523,7 +522,7 @@ void student_create(Student* stud, unsigned int id, char* name, char* surname,
     stud->grades = grades;
 }
 
-int student_copy(Student* s1, Student* s2) {
+int student_copy(Student* s1, const Student* s2) {
     s1->id = s2->id;
     s1->name = (char*)malloc(sizeof(char) * (strlen(s2->name) + 1));
     if (s1->name == NULL) {
@@ -565,7 +564,7 @@ void student_free(Student* stud) {
     free(stud->grades);
 }
 
-void free_everything(int amount, ...) {
+void free_everything(const unsigned amount, ...) {
     va_list args;
     va_start(args, amount);
     for (int i = 0; i < amount; i++) {
@@ -574,14 +573,14 @@ void free_everything(int amount, ...) {
     }
 }
 
-void free_students_arr(Student* arr, int size) {
+void free_students_arr(Student* arr, unsigned int size) {
     for (int i = 0; i < size; i++) {
         student_free(&(arr[i]));
     }
     free(arr);
 }
 
-void print_error(int st) {
+void print_error(const int st) {
     switch (st)
     {
     case UNABLE_TO_OPEN_A_FILE:
@@ -604,7 +603,7 @@ void print_error(int st) {
     }
 }
 
-void print_students_arr(FILE* trass, Student* arr, int size, void (*printer)(FILE*, Student)) {
+void print_students_arr(FILE* trass, const Student* arr, const unsigned int size, void (*printer)(FILE*, Student)) {
     if (size == 0) {
         fprintf(trass, "The array is empty!\n");
     }
@@ -613,7 +612,7 @@ void print_students_arr(FILE* trass, Student* arr, int size, void (*printer)(FIL
     }
 }
 
-void print_student(FILE* trass, Student stud) {
+void print_student(FILE* trass, const Student stud) {
     fprintf(trass, "Students characteristic:\n");
     fprintf(trass, "id: %u\n", stud.id);
     fprintf(trass, "name: %s\n", stud.name);
@@ -626,7 +625,7 @@ void print_student(FILE* trass, Student stud) {
     fprintf(trass, "\n\n");
 }
 
-void print_for_find(FILE* trass, Student stud) {
+void print_for_find(FILE* trass, const Student stud) {
     fprintf(trass, "name: %s\n", stud.name);
     fprintf(trass, "surname: %s\n", stud.surname);
     fprintf(trass, "group: %s\n", stud.group);
@@ -638,12 +637,12 @@ void print_for_find(FILE* trass, Student stud) {
     fprintf(trass, "average grade: %lf\n", av_gr);
 }
 
-void print_for_good_stud(FILE* trass, Student stud) {
+void print_for_good_stud(FILE* trass, const Student stud) {
     printf("name: %s\n", stud.name);
     printf("surname: %s\n", stud.surname);
 }
 
-int is_valid_uint(char* str) {
+int is_valid_uint(const char* str) {
     int ind = 0;
     while (str[ind] != '\0') {
         if (!isdigit(str[ind])) {
@@ -654,7 +653,7 @@ int is_valid_uint(char* str) {
     return (ind == 0) ? 0 : 1;
 }
 
-int is_valid_grades(char* grades) {
+int is_valid_grades(const char* grades) {
     int ind = 0;
     while (grades[ind] != '\0') {
         if (!isdigit(grades[ind]) || grades[ind] < '2' || grades[ind] > '5') {
@@ -665,7 +664,7 @@ int is_valid_grades(char* grades) {
     return (ind == 5) ? 1 : 0;
 }
 
-int is_valid_name(char* name) {
+int is_valid_name(const char* name) {
     int ind = 0;
     while (name[ind] != '\0') {
         if (!isalpha(name[ind])) {

@@ -583,7 +583,7 @@ void print_menu() {
 /*
 Че должен уметь:
 добавить mail в post
-удалить mail из post
+удалить mail из postvoid free_students_arr(Student* arr, unsigned int size)
 Поиск mail по идентификатору и информативный вывод о письме
 
 mail должны быть посортированы!! (Сначала по индексу получателя,

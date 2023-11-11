@@ -22,7 +22,7 @@ enum status_codes {
     WRONG_AMOUNT_OF_ARGUMENTS
 };
 
-void print_error(int st) {
+void print_error(const int st) {
     switch (st)
     {
     case UNABLE_TO_OPEN_A_FILE:
@@ -175,7 +175,7 @@ void fprint_tree(FILE* file, const Tree tree)
 	fprint_tree_node(file, tree.root, 0);
 }
 
-int is_separator(char c) {
+int is_separator(const char c) {
     return (c == ' ' || c == '\t' || c == '\n');
 }
 

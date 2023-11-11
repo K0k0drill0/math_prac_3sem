@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <string.h>
 
 enum status_codes {
     ok, 
@@ -57,12 +58,27 @@ typedef struct RouteNode {
 } RouteNode;
 
 typedef struct VehicleRoute {
+    char* number;
     RouteNode route;
     struct VehicleRoute* next_route;
 } VehicleRoute;
 
 int is_separator(char c) {
     return (c == ' ' || c == '\t' || c == '\n');
+}
+
+int cmp_time(const char* a, const char* b) {
+    for (int i = 0; i < 4; i++) {
+        if (a[i+6] != b[i+6]) {
+            return a[i+6] < b[i+6] ? -1 : 1;
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        if (a[i+3] != b[i+3]) {
+            return a[i+6] < b[i+6] ? -1 : 1;
+        }
+    }
+    return strcmp(a, b);
 }
 
 int get_word_from_file(FILE* inp, char** str_inp) {
@@ -141,44 +157,44 @@ int read_stop_from_file(FILE* inp, Stop* stop) {
     return ok;
 }
 
-// Добавление остановки в пройденный маршрут
-void addStopToRoute(VehicleRoute* vehicleRoute, Stop stop) {
-    RouteNode* newNode = (RouteNode*)malloc(sizeof(RouteNode));
-    newNode->stop = stop;
-    newNode->next = NULL;
+void create_Stop(Stop* stop) {
+    stop->arrivalTime = NULL;
+    stop->departureTime = NULL;
+    stop->marker = NULL;
+    stop->number = NULL;
+    stop->Coords.x = 0;
+    stop->Coords.x = 0;
+}
 
-    if (vehicleRoute->route == NULL) {
-        vehicleRoute->route = newNode;
-    } else {
-        RouteNode* current = vehicleRoute->route;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = newNode;
+void create_RouteNode(RouteNode* rn) {
+    rn->next = NULL;
+    create_Stop(&(rn->stop));
+}
+
+void create_VehicleRoute(VehicleRoute* arr) {
+    arr->number = NULL;
+    arr->next_route = NULL;
+    create_RouteNode(&(arr->route));
+}
+
+int VehicleRoute_append(VehicleRoute* list, Stop stop) {
+    RouteNode needed_route;
+    needed_route = list->route;
+    //create_RouteNode(needed_route);
+    while (!strcmp(list->number, stop.number) || list->next_route != NULL) {
+        needed_route = *(list->next_route);
     }
 }
 
-// Поиск транспортного средства с наибольшим количеством маршрутов
-void findVehicleWithMostRoutes(VehicleRoute* vehicleRoutes, int numRoutes) {
-    int maxRoutes = 0;
-    char maxVehicleNumber[20] = "";
+/*
+1. итерируемся по файлам. 
+2. Открыли файл
+    Считали координаты
+    Читаем остановки.
+    Встретили остановку, запихнули её к нужному номеру в нужное по времени место.
+*/
 
-    for (int i = 0; i < numRoutes; i++) {
-        int numStops = 0;
-        RouteNode* current = vehicleRoutes[i].route;
-        while (current != NULL) {
-            numStops++;
-            current = current->next;
-        }
 
-        if (numStops > maxRoutes) {
-            maxRoutes = numStops;
-            strcpy(maxVehicleNumber, vehicleRoutes[i].location);
-        }
-    }
-
-    printf("Транспортное средство с наибольшим количеством маршрутов: %s\n", maxVehicleNumber);
-}
 
 void free_everything(int amount, ...) {
     va_list args;
