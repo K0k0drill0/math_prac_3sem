@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+
 enum status_codes {
     ok,
     INVALID_PARAMETER
@@ -12,8 +14,6 @@ void reverse(char* arr, int arr_size) {
         arr[arr_size - 1 - i] = tmp;
     }
 }
-
-#include <stdio.h>
 
 int subtractOne(int num) {
     int mask = 1;
