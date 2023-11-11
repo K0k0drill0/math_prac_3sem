@@ -622,11 +622,12 @@ int main() {
         return 1;
     }
     
-    print_menu();
+    //print_menu();
 
     char* q = NULL;
     int st = ok;
     while (1) {
+        print_menu();
         printf("Your action: ");
         free(q);
         st = get_string(&q);

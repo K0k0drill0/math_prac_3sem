@@ -174,6 +174,10 @@ void print_menu() {
 }
 
 void print_students_with_good_grades(FILE* trass, const Student* students_arr, const unsigned int students_arr_tmp_size) {
+    if (students_arr_tmp_size == 0) {
+        fprintf(trass, "The array is empty!\n");
+        return;
+    }
     double grades_sum = 0.0;
     for (int i = 0; i < students_arr_tmp_size; i++) {
         for (int j = 0; j < 5; j++) {
