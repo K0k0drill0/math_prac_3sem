@@ -1,99 +1,85 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#include <errno.h>
-
-enum status_code {
+enum status_codes {
     ok,
-    MEMORY_ISSUES,
-    OVERFLOWED, 
-    INVALID
+    INVALID_PARAMETER
 };
 
-void print_error(int st) {
-    switch (st)
-    {
-    case MEMORY_ISSUES:
-        printf("Unable to allocate the memory.\n");
-        break;
-    case OVERFLOWED:
-        printf("Overflowed!\n");
-        break;
-    case INVALID:
-        printf("INVALID!\n");
-        break;
-    default:
-        break;
+void reverse(char* arr, int arr_size) {
+    for (int i = 0; i <= (arr_size - 1) / 2; i++) {
+        char tmp = arr[i];
+        arr[i] = arr[arr_size - 1 - i];
+        arr[arr_size - 1 - i] = tmp;
     }
 }
 
-double cut_sum(double* arr, int l, int r) {
-    double ans = 0.0;
-    for (int i = l; i <= r; i++) {
-        ans += arr[i];
+#include <stdio.h>
+
+int subtractOne(int num) {
+    int mask = 1;
+    int bit_cnt = 0;
+    while (num > 0) {
+        num >>= 1;
+        bit_cnt++;
     }
-    return ans;
+    while (bit_cnt != 2) {
+        num ^= 1;
+        num <<= 1;
+        bit_cnt--;
+    }
+    num ^= 1;
+    return num;
 }
 
-void print_arr(double* arr, int size) {
-    for (int i = 0; i < size; i++) {
-        printf("%lf ", arr[i]);
+
+int dec_to_base(int num, int r, char* ans) {
+    if (r < 1 || r > 5) return INVALID_PARAMETER; 
+    char alphabet[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    int sign = (num >= 0) ? 1 : -1;
+    num = abs(num);
+
+    int ans_ind = 0; 
+    int mask = subtractOne((1 << r)); 
+    //(1 << r) - 1;
+    while (num > 0) {
+        int digit = num & mask;
+        ans[ans_ind] = alphabet[digit];
+        ans_ind++;
+
+        num >>= r;
     }
-    printf("\n");
-}
-
-int polynomial_re_expansion(double epsilon, double a, double** coefficients_g, int degree, ...) {
-    if (epsilon < 0.0 || degree < 0) {
-        return INVALID;
+    if (sign == -1) {
+        ans[ans_ind] = '-';
+        ans_ind++;
     }
-    va_list args;
-    va_start(args, degree);
-
-    double* coefficients_f = (double*)malloc(sizeof(double) * (degree+1));
-    *coefficients_g = (double*)malloc(sizeof(double) * (degree+1));
-    if (coefficients_f == NULL || *coefficients_g == NULL) {
-        free(coefficients_f);
-        return MEMORY_ISSUES;
-    }
-
-    double a_pow = 1;
-    for (int i = 0; i <= degree; i++) {
-        coefficients_f[i] = va_arg(args, double) * a_pow;
-        a_pow *= a;
-    }
-
-    va_end(args);
-
-    (*coefficients_g)[0] = cut_sum(coefficients_f, 0, degree);
-
-    int k_fac = 1;
-
-    for (int k = 1; k <= degree; k++) {
-        k_fac *= k;
-        if (errno == ERANGE) {
-            free(coefficients_f);
-            return OVERFLOWED;
-        }
-        (*coefficients_g)[k] = 0.0;
-        for (int i = k; i <= degree; i++) {
-            coefficients_f[i] = coefficients_f[i] * (i - k + 1) / a;
-            (*coefficients_g)[k] += coefficients_f[i];
-        }
-        (*coefficients_g)[k] /= k_fac;
-    }
-    free(coefficients_f);
+    ans[ans_ind] = '\0';
+    reverse(ans, ans_ind);
     return ok;
 }
 
+
 int main() {
-    double* res;
-    int st = polynomial_re_expansion(0.00001, 2.0, &res, 2, 1.0, 2.0, 3.0);
-    if (st != ok) {
-        print_error(st);
-        free(res);
-        return 1;
-    }
-    print_arr(res, 3);
-    free(res);
+    // int lol = 8;
+    // printf("%d\n", subtractOne(lol));
+    // return 0;
+
+    unsigned int num = 35;
+    char ans_2[33];
+    char ans_4[33];
+    char ans_8[33];
+    char ans_16[33];
+    char ans_32[33];
+    dec_to_base(num, 1, ans_2);
+    dec_to_base(num, 2, ans_4);
+    dec_to_base(num, 3, ans_8);
+    dec_to_base(num, 4, ans_16);
+    dec_to_base(num, 5, ans_32);
+    printf("Decimal: %d\n", num);
+    printf("base 2: %s\n", ans_2);
+    printf("base 4: %s\n", ans_4);
+    printf("base 8: %s\n", ans_8);
+    printf("base 16: %s\n", ans_16);
+    printf("base 32: %s\n", ans_32);
     return 0;
 }
