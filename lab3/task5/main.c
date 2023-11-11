@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     //print_menu();
     int flag = 1;
     st = ok;
-    while (st == ok) {
+    while (st == ok || st == INVALID_INPUT) {
         print_menu();
         free(action);
         st = get_word_from_file(stdin, &action);

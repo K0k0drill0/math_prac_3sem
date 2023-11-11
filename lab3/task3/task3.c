@@ -270,10 +270,10 @@ void print_employee_arr(FILE* outp, Employee* arr, int size) {
 
 int main(int argc, char** argv) {
 
-    argc = 4;
-    argv[1] = "input.txt";
-    argv[2] = "-d";
-    argv[3] = "output.txt";
+    // argc = 4;
+    // argv[1] = "input.txt";
+    // argv[2] = "-d";
+    // argv[3] = "output.txt";
 
     int st;
     st = check_valid_args(argc, argv);

@@ -114,10 +114,25 @@ int compare_mails(const void* a, const void* b) {
     return indexCmp;
 }
 
+int cmp_time(String a, String b) {
+    for (int i = 0; i < 4; i++) {
+        if (a.data[i+6] != b.data[i+6]) {
+            return a.data[i+6] < b.data[i+6] ? -1 : 1;
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        if (a.data[i+3] != b.data[i+3]) {
+            return a.data[i+6] < b.data[i+6] ? -1 : 1;
+        }
+    }
+    return string_compare(a, b);
+}
+
 int compare_mails_by_creation_time(const void* a, const void* b) {
     Mail* mail1 = (Mail*)a;
     Mail* mail2 = (Mail*)b;
-    return string_compare(mail1->receiving_time, mail2->receiving_time);
+    return cmp_time(mail1->receiving_time, mail2->receiving_time);
+    //return string_compare(mail1->receiving_time, mail2->receiving_time);
 }
 
 int get_mail(Mail* mail) {
@@ -598,6 +613,7 @@ mail должны быть посортированы!! (Сначала по и�
 */
 
 int main() {
+
     int mails_arr_max_size = 16;
     int mails_arr_tmp_size = 0;
     Mail* mails_arr = (Mail*)malloc(sizeof(Mail) * mails_arr_max_size);
@@ -665,7 +681,7 @@ int main() {
                 break;
             } 
             int ind = find_mail_by_ind(mails_arr, mails_arr_tmp_size, mail_id);
-            if (st == mails_arr_tmp_size) {
+            if (ind == mails_arr_tmp_size) {
                 printf("There are no such element!\n");
             }
             else {

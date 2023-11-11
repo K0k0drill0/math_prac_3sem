@@ -15,43 +15,87 @@ void reverse(char* arr, int arr_size) {
     }
 }
 
-int subtractOne(int num) {
-    int mask = 1;
-    int bit_cnt = 0;
-    while (num > 0) {
-        num >>= 1;
-        bit_cnt++;
-    }
-    while (bit_cnt != 2) {
-        num ^= 1;
-        num <<= 1;
-        bit_cnt--;
-    }
-    num ^= 1;
-    return num;
+int increment(int* a)
+{
+	if (a == NULL)
+	{
+		return 0;
+	}
+	int mask = 1;
+	int c = 1; // carry digit
+	while (*a & mask)
+	{
+		*a ^= c;
+		c <<= 1;
+		mask <<= 1;
+	}
+	*a |= c;
+	return *a;
 }
+
+int decrement(int* a)
+{
+	if (a == NULL)
+	{
+		return 0;
+	}
+	int mask = 1;
+	int c = 1; // carry digit
+	while (~(*a) & mask)
+	{
+		*a ^= c;
+		c <<= 1;
+		mask <<= 1;
+	}
+	*a ^= c;
+	return *a;
+}
+
+// int subtractOne(int num) {
+//     int mask = 1;
+//     int bit_cnt = 0;
+//     while (num > 0) {
+//         num >>= 1;
+//         bit_cnt++;
+//     }
+//     while (bit_cnt != 2) {
+//         num ^= 1;
+//         num <<= 1;
+//         bit_cnt--;
+//     }
+//     num ^= 1;
+//     return num;
+// }
 
 
 int dec_to_base(int num, int r, char* ans) {
     if (r < 1 || r > 5) return INVALID_PARAMETER; 
     char alphabet[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+    if (num == 0) {
+        ans[0] = '0';
+        ans[1] = '\0';
+        return ok;
+    }
+
     int sign = (num >= 0) ? 1 : -1;
     num = abs(num);
 
     int ans_ind = 0; 
-    int mask = subtractOne((1 << r)); 
+    int two_pow = 1 << r;
+    int mask = decrement(&two_pow);//subtractOne((1 << r)); 
     //(1 << r) - 1;
     while (num > 0) {
         int digit = num & mask;
         ans[ans_ind] = alphabet[digit];
-        ans_ind++;
-
+        //ans_ind++;
+        ans_ind = increment(&ans_ind);
         num >>= r;
     }
     if (sign == -1) {
         ans[ans_ind] = '-';
-        ans_ind++;
+        ans_ind = increment(&ans_ind);
+        //ans_ind++;
     }
     ans[ans_ind] = '\0';
     reverse(ans, ans_ind);
@@ -63,8 +107,8 @@ int main() {
     // int lol = 8;
     // printf("%d\n", subtractOne(lol));
     // return 0;
-
-    unsigned int num = 35;
+    
+    int num = 32;
     char ans_2[33];
     char ans_4[33];
     char ans_8[33];
