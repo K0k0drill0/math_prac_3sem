@@ -4,7 +4,7 @@
 #include <math.h>
 #include "vector.h"
 
-void print_error(int st) {
+void print_error(const int st) {
     switch (st)
     {
     case MEMORY_ISSUES:
@@ -181,21 +181,21 @@ void free_vector_arr(Vector** arr, int size) {
     free(*arr);
 }
 
-int print_vector(Vector vec) {
+void print_vector(const Vector vec) {
     for (int i = 0; i < vec.n; i++) {
         printf("%lf ", vec.coords[i]);
     }
     printf("\n");
 }
 
-int print_vector_array(Vector* arr, int size) {
+void print_vector_array(const Vector* arr, const int size) {
     for (int i = 0; i < size; i++) {
         print_vector(arr[i]);
     }
     printf("\n");
 }
 
-int print_matrix(Matrix matrix) {
+void print_matrix(const Matrix matrix) {
     for (int i = 0; i < matrix.m; i++) {
         for (int j = 0; j < matrix.n; j++) {
             printf("%lf ", matrix.data[i][j]);

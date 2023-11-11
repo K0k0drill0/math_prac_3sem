@@ -34,7 +34,7 @@ typedef struct {
 
 void print_mails_arr(const Mail* mails_arr, const int arr_tmp_size);
 
-void free_everything(int amount, ...) {
+void free_everything(unsigned int amount, ...) {
     va_list args;
     va_start(args, amount);
     for (int i = 0; i < amount; i++) {
@@ -114,7 +114,7 @@ int compare_mails(const void* a, const void* b) {
     return indexCmp;
 }
 
-int cmp_time(String a, String b) {
+int cmp_time(const String a, const String b) {
     for (int i = 0; i < 4; i++) {
         if (a.data[i+6] != b.data[i+6]) {
             return a.data[i+6] < b.data[i+6] ? -1 : 1;

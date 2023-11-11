@@ -21,7 +21,7 @@ enum status_code{
     INVALID_FILE
 };
 
-void print_error(int st) {
+void print_error(const int st) {
     switch (st)
     {
     case INVALID_AMOUNT_ARGUMENTS:
@@ -44,7 +44,7 @@ void print_error(int st) {
     }
 }
 
-int is_valid_int(char* num) {
+int is_valid_int(const char* num) {
     int ind = 0;
     while (num[ind] != '\0') {
         if (!isdigit(num[ind])) {
@@ -55,7 +55,7 @@ int is_valid_int(char* num) {
     return 1;
 }
 
-int is_valid_double(char* num) {
+int is_valid_double(const char* num) {
     int dots_counter = 0;
     int ind = 0;
     while (num[ind] != '\0') {
@@ -72,7 +72,7 @@ int is_valid_double(char* num) {
     return 1;
 }
 
-int is_valid_name(char* name) {
+int is_valid_name(const char* name) {
     int ind = 0;
     while (name[ind] != '\0') {
         if (!isalpha(name[ind])) {
@@ -83,7 +83,7 @@ int is_valid_name(char* name) {
     return 1;
 }
 
-void free_everything(int amount, ...) {
+void free_everything(const unsigned int amount, ...) {
     va_list args;
     va_start(args, amount);
     for (int i = 0; i < amount; i++) {
@@ -130,7 +130,7 @@ int get_string(FILE* inp, char** str) {
     return ok;
 }
 
-int separate_words(char* line, int amount, ...) {
+int separate_words(char* line, const unsigned int amount, ...) {
     va_list args;
     va_start(args, amount);
 
@@ -261,8 +261,7 @@ int compare_employees(const void* a, const void* b) {
     return emp1->id - emp2->id;
 }
 
-
-void print_employee_arr(FILE* outp, Employee* arr, int size) {
+void print_employee_arr(FILE* outp, const Employee* arr, const unsigned int size) {
     for (int i = 0; i < size; i++) {
         fprintf(outp, "%d %s %s %lf\n", arr[i].id, arr[i].name, arr[i].second_name, arr[i].wage);
     }

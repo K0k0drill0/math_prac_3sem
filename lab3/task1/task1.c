@@ -51,24 +51,8 @@ int decrement(int* a)
 	return *a;
 }
 
-// int subtractOne(int num) {
-//     int mask = 1;
-//     int bit_cnt = 0;
-//     while (num > 0) {
-//         num >>= 1;
-//         bit_cnt++;
-//     }
-//     while (bit_cnt != 2) {
-//         num ^= 1;
-//         num <<= 1;
-//         bit_cnt--;
-//     }
-//     num ^= 1;
-//     return num;
-// }
 
-
-int dec_to_base(int num, int r, char* ans) {
+int dec_to_base(int num, const int r, char* ans) {
     if (r < 1 || r > 5) return INVALID_PARAMETER; 
     char alphabet[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

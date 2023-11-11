@@ -17,7 +17,7 @@ typedef struct {
     double** data;
 } Matrix;
 
-void print_error(int st);
+void print_error(const int st);
 
 int max_norm(const Vector vec, double* ans);
 int p_norm(const Vector vec, const int p, double* ans);
@@ -34,9 +34,9 @@ int create_matrix(Matrix* matrix, const int m, const int n, ...);
 void free_vector(Vector* vec);
 void free_matrix(Matrix* matrix);
 
-int print_vector(Vector vec);
-int print_vector_array(Vector* arr, int size);
-int print_matrix(Matrix matrix);
+void print_vector(const Vector vec);
+void print_vector_array(const Vector* arr, const int size);
+void print_matrix(const Matrix matrix);
 
 
 #endif
