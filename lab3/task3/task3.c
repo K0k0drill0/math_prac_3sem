@@ -267,12 +267,46 @@ void print_employee_arr(FILE* outp, const Employee* arr, const unsigned int size
     }
 }
 
+int is_paths_valid(char* file1, char* file2) {
+    if (strcmp(file1, file2) == 0) {
+        return 0;
+    }
+
+    int ind1 = 0;
+    int ind2 = 0;
+    while (file1[ind1] != '\0') {
+        ind1++;
+    }
+    while (file2[ind2] != '\0') {
+        ind2++;
+    }
+
+    char flag = 1;
+    while (ind1 >= 0 && ind2 >= 0 && file1[ind1] != '/' && file2[ind2] != '/') {
+        //printf("%c%c\n", file1[ind1], file2[ind2]);
+        if (file1[ind1] != file2[ind2]) {
+            flag = 0;
+            break;
+        }
+        ind1--;
+        ind2--;
+    }
+
+    if (flag) {
+        return 0;
+    }
+    return 1;
+}
+
 int main(int argc, char** argv) {
 
-    // argc = 4;
-    // argv[1] = "input.txt";
-    // argv[2] = "-d";
-    // argv[3] = "output.txt";
+    argc = 4;
+    argv[1] = "input.txt";
+    argv[2] = "-d";
+    argv[3] = "/input.txt";
+
+    printf("%d\n", is_paths_valid(argv[1], argv[3]));
+    return 0;
 
     int st;
     st = check_valid_args(argc, argv);
@@ -284,7 +318,7 @@ int main(int argc, char** argv) {
 
     FILE* inp = fopen(argv[1], "r");
     FILE* outp = fopen(argv[3], "w+");
-    if (!inp || !outp) {
+    if (!inp || !outp || !is_paths_valid(argv[1], argv[3])) {
         fclose(inp);
         fclose(outp);
         print_error(UNABLE_TO_OPEN_FILE);

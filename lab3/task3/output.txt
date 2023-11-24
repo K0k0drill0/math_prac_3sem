@@ -1,2 +1,6 @@
-2 nastua krutishkina 15.000000
+2 bobd lohov 3000000000.000000
 1 bob lohov 3000000000.000000
+1 boba lohov 300000000.000000
+1 bobs lohov 30000000.000000
+2 bobf lohov 700000.000000
+2 nastua krutishkina 15.000000

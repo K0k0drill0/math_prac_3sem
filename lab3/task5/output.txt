@@ -1,5 +1,39 @@
+Sorting...
+Students characteristic:
+id: 123
+name: loh
+surname: pidorovich
+group: M8O-211B-22
+grades: 22222
+
+Students characteristic:
+id: 321
+name: gay
+surname: lohovich
+group: M8O-111B-22
+grades: 23432
+
+Students characteristic:
+id: 543
+name: chmo
+surname: gandonovich
+group: ascfghvhdjk1
+grades: 23432
+
+Printing...
+Students characteristic:
+id: 321
+name: gay
+surname: lohovich
+group: M8O-111B-22
+grades: 23432
+
+Students characteristic:
+id: 543
+name: chmo
+surname: gandonovich
+group: ascfghvhdjk1
+grades: 23432
+
 Searching...
 The array is empty!
-Sorting...
-The array is empty!
-Printing...
