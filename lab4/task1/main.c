@@ -9,45 +9,6 @@ int is_separator(char c) {
     return (c == ' ' || c == '\t' || c == '\n');
 }
 
-int get_value_from_file(FILE* inp, FILE* outp, char** str_inp) {
-    int arr_max_size = 16;
-    *str_inp = (char*)malloc(sizeof(char) * arr_max_size);
-    if (*str_inp == NULL) {
-        return MEMORY_ISSUES;
-    }
-
-    char c;
-    c = getc(inp);
-    int ind = 0;
-    while ((c == '\t' || c == ' ') && c != EOF) {
-        putc(c, outp);
-        c = getc(inp);
-    }
-
-    if (c == EOF) {
-        //free(*str_inp);
-        return EOF;
-    }
-
-    while (c != '\n' && c != EOF) {
-        if (ind >= arr_max_size - 1) {
-            arr_max_size *= 2;
-            char *tmp = (char*)realloc(*str_inp, arr_max_size * sizeof(char));
-            if (tmp == NULL) {
-                //free(str_inp);
-                return MEMORY_ISSUES;
-            }
-            *str_inp = tmp;
-        }
-        (*str_inp)[ind] = c;
-        ind++;
-        c = getc(inp);
-    }
-    
-    (*str_inp)[ind] = '\0';
-    return ok;
-}
-
 int get_word_from_file(FILE* inp, FILE* outp, char** str_inp) {
     int arr_max_size = 16;
     *str_inp = (char*)malloc(sizeof(char) * arr_max_size);
@@ -256,12 +217,7 @@ int fill_hashtable(FILE* inp, FILE* outp, HashTable** ht, Cache** cache) {
         free(key);
         return st;
     }
-    /*
-    при считвании дефайнов мы отправляем запросы пока не встретим отсутствие дефайна
-    или конец файла. Другие состояния - некорректный дефайн или ошибка. 
-    Пока не встреттим отсутствие дефайна или конец файла, отправляем запросы на чтение 
-    из файла и записываем в таблицу. Как только ошибка другая - дристаем под себя
-    */
+
 }
 
 void write_word(FILE* outp, char* str) {
@@ -331,25 +287,6 @@ void copy_file(FILE* dest, FILE* source) {
 }
 
 
-/*
-Ключи и значения добавляем в хэш таблицу.
-При добавлении ключа в таблицу считаем два хэша
-(предварительный и конечный). Предварительный хэш записываем
-В кэш-лист (добавление с заменой)
-
-Конечный записываем в таблицу, меняем значение длин.
-
-Как только выполняется условие рехэширования,
-начинаем этот процесс. Идем по списку кэша, считаем новый
-конечный хэш, пихаем в новую таблицу. 
-*/
-
-/*
-Как будем читать?
-1. Считать диррективы, записать в таблицу
-2. идем по файлу. Читаем максимально длинную последовательность
-*/
-
 int main(int argc, char** argv) {
     if (argc != 2) {
         print_error(INVALID_ARGUMENTS);
@@ -388,55 +325,6 @@ int main(int argc, char** argv) {
 
     fclose(inp);
     fclose(outp);
-    //Node* nd1 = NULL, *nd2 = NULL;
-    // //char* k1 = "ab", v1 = "123", k2 = "cd", v2 = "456";
-    // char* k1 = (char*)malloc(sizeof(char) * 10);
-    // char* v1 = (char*)malloc(sizeof(char) * 10);
-    // char* k2 = (char*)malloc(sizeof(char) * 10);
-    // char* v2 = (char*)malloc(sizeof(char) * 10);
-    // char* k3 = (char*)malloc(sizeof(char) * 10);
-    // char* v3 = (char*)malloc(sizeof(char) * 10);
-    // char* k4 = (char*)malloc(sizeof(char) * 10);
-    // char* v4 = (char*)malloc(sizeof(char) * 10);
-    // strcpy(k1, "zzz");
-    // strcpy(v1, "123");
-    // strcpy(k2, "ab");
-    // strcpy(v2, "456");
-    // strcpy(k3, "ef");
-    // strcpy(v3, "999");
-    // strcpy(k4, "aa");  
-    // strcpy(v4, "666");
-
-    
-
-    // Cache* list = NULL;
-    // // add_cache_node_rp(&list, k1, 123);
-    // // add_cache_node_rp(&list, k2, 12309);
-    // // add_cache_node_rp(&list, k3, 123578);
-    // // print_cache_list(list);
-    // // delete_cache_list(list);
-
-    // HashTable* ht;
-    // create_hashtable(&ht, 3);
-    // insert_hashtable(&ht, &list, k1, v1);
-    // insert_hashtable(&ht, &list, k2, v2);
-    // insert_hashtable(&ht, &list, k3, v3);
-    // insert_hashtable(&ht, &list, k4, v4);
-
-    // // create_node(&nd1, k1, v1);
-    // // create_node(&nd2, k2, v2);
-
-    // // HashTable ht;
-    // // Node* Cache = NULL;
-    // // create_hashtable(&ht, 128);
-    // // insert_hashtable(&ht, Cache, nd1);
-    // // insert_hashtable(&ht, Cache, nd2);
-
-    // print_hashtable(ht);
-    // print_cache_list(list);
-    // delete_hashtable(ht);
-    // delete_cache_list(list);
-
 
     return 0;
 }
