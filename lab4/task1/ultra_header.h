@@ -15,6 +15,7 @@ typedef struct HashTable {
     Node** table;
     ull* lists_lenghths;
     ull HashSize;
+    ull (*hash) (const char*, const ull);
 } HashTable;
 
 typedef struct Cache {
@@ -77,7 +78,7 @@ int is_rehash_needed(const HashTable* ht);
 
 int rehashing(Cache* cache, HashTable** ht_old);
 
-int create_hashtable(HashTable** ht, ull hash_size);
+int create_hashtable(HashTable** ht, ull hash_size, ull (*hash) (const char*, const ull));
 
 int insert_hashtable(HashTable** ht, Cache** cache, char* key,
  char* value);

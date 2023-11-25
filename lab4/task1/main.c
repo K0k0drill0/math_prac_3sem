@@ -231,7 +231,7 @@ void write_word(FILE* outp, char* str) {
 int proccess_file(FILE* inp, FILE* outp) { 
     HashTable* ht = NULL;
     Cache* cache = NULL;
-    int st = create_hashtable(&ht, 128);
+    int st = create_hashtable(&ht, 128, hash);
     if (st != ok) {
         return st;
     }
@@ -288,6 +288,8 @@ void copy_file(FILE* dest, FILE* source) {
 
 
 int main(int argc, char** argv) {
+    argc = 2;
+    argv[1] = "input.txt";
     if (argc != 2) {
         print_error(INVALID_ARGUMENTS);
         return 1;

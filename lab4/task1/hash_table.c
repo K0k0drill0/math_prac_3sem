@@ -56,7 +56,7 @@ int rehashing(Cache* cache, HashTable** ht_old) {
     }
 
     HashTable* ht_new;
-    int st = create_hashtable(&ht_new, new_hashsize);
+    int st = create_hashtable(&ht_new, new_hashsize, (*ht_old)->hash);
     if (st != ok) {
         return st;
     }
@@ -85,7 +85,7 @@ int rehashing(Cache* cache, HashTable** ht_old) {
 
 }
 
-int create_hashtable(HashTable** ht, ull hash_size) {
+int create_hashtable(HashTable** ht, ull hash_size, ull (*hash) (const char*, const ull)) {
     *ht = (HashTable*)malloc(sizeof(HashTable));
     if (*ht == NULL) {
         return MEMORY_ISSUES;
@@ -108,12 +108,14 @@ int create_hashtable(HashTable** ht, ull hash_size) {
         return MEMORY_ISSUES;
     }
 
+    (*ht)->hash = hash;
+
     return ok;
 }
 
 int insert_hashtable(HashTable** ht, Cache** cache, char* key,
  char* value) {
-    ull hs = pre_hash(key);
+    ull hs = (*ht)->hash(key, MOD_MAIN); //pre_hash(key);
     int st = ok;
     st = add_cache_node_rp(cache, &key, hs);
     if (st != ok) {
@@ -142,7 +144,7 @@ int insert_hashtable(HashTable** ht, Cache** cache, char* key,
 }
 
 char* find_value_hashtable(const HashTable* ht, const char* key) {
-    ull hs = hash(key, ht->HashSize);
+    ull hs = ht->hash(key, ht->HashSize);
     Node* ans = find_node_by_key(ht->table[hs], key);
     return (ans == NULL) ? NULL : ans->value;
 }
