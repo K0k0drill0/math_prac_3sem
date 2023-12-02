@@ -1,0 +1,12 @@
+Infix form: (3-4))
+Line: 1
+Unbalanced brackets!
+
+Infix form: 5/(4-2*2)
+Line: 2
+Division by zero!
+
+Infix form: 0^0
+Line: 3
+Zero in power of zero!
+

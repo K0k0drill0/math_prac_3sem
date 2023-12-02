@@ -1,0 +1,4 @@
+Infix form: sad
+Line: 1
+Invalid character met!
+

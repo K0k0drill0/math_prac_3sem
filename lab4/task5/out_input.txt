@@ -1,0 +1,4 @@
+Infix form: sdasd
+Line: 2
+Invalid character met!
+
