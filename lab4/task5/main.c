@@ -783,9 +783,6 @@ void add_out(char* filename) {
 
 int main(int argc, char** argv) {
 
-    argc = 4;
-    argv[1] = "input.txt", argv[2] = "input2.txt", argv[3] = "input3.txt";
-
     int st = ok;
 
     for (int i = 1; i < argc; i++) {

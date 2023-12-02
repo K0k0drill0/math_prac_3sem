@@ -139,8 +139,6 @@ int process_file(FILE* inp) {
 
 
 int main(int argc, char** argv) {
-    argc = 2;
-    argv[1] = "input.txt";
 
     if (argc != 2) {
         print_error(WRONG_AMOUNT_OF_ARGUMENTS);
