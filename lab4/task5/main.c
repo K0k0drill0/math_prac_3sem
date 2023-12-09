@@ -777,7 +777,6 @@ void add_out(char* filename) {
         ind--;
     }
     filename[ind+4] = filename[ind];
-
     filename[0] = 'o', filename[1] = 'u', filename[2] = 't', filename[3] = '_';
 }
 

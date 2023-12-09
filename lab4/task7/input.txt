@@ -1,7 +1,6 @@
-myvar=15;
+myvar=20;
 bg=25;
-ccc=myvar/5;
+ccc=myvar%3;
 print ccc;
-myvar=ccc;
 bg=ccc*myvar;
 print;

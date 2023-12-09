@@ -2,17 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <string.h>
-
-enum status_codes {
-    ok, 
-    UNABLE_TO_OPEN_A_FILE,
-    INVALID_FILE,
-    INVALID_ARGUMENTS,
-    MEMORY_ISSUES,
-    INVALID_INPUT,
-    WRONG_AMOUNT_OF_ARGUMENTS
-};
+#include <errno.h>
+#include <ctype.h>
+#include "lists.h"
 
 void print_error(int st) {
     switch (st)
@@ -35,50 +27,110 @@ void print_error(int st) {
     case WRONG_AMOUNT_OF_ARGUMENTS:
         printf("Wrong amount of arguments!\n");
         break;
+    case INVALID_FUNCTION_ARGUMENT:
+        printf("Invalid function argument!\n");
+        break;
+    case OVERFLOWED:
+        printf("Overflowed!\n");
+        break;
+    case INVALID_DATE_OR_TIME:
+        printf("Invalid date or time!\n");
+        break;
+    case INVALID_STATE:
+        printf("Invalid state!\n");
+        break;
+    case INVALID_COORDS:
+        printf("Invalid coordinates!\n");
+        break;
+    case NO_SUCH_BUS:
+        printf("No such bus!\n");
+        break;
     default:
         break;
     }
 }
 
-typedef struct {
-    double x, y;
-} Coords;
-
-typedef struct {
-    char* number;
-    char* arrivalTime;
-    char* departureTime;
-    char marker;
-    Coords Coords;
-} Stop;
-
-typedef struct RouteNode {
-    Stop stop;
-    struct RouteNode* next;
-} RouteNode;
-
-typedef struct VehicleRoute {
-    char* number;
-    RouteNode route;
-    struct VehicleRoute* next_route;
-} VehicleRoute;
-
 int is_separator(char c) {
     return (c == ' ' || c == '\t' || c == '\n');
 }
 
-int cmp_time(const char* a, const char* b) {
-    for (int i = 0; i < 4; i++) {
-        if (a[i+6] != b[i+6]) {
-            return a[i+6] < b[i+6] ? -1 : 1;
+int is_valid_int(char* str) {
+    int ind = 0;
+    while (str[ind] != '\0') {
+        if (!isdigit(str[ind])) {
+            return 0;
+        }
+        ind++;
+    }
+    return 1;
+}
+
+int is_leap_year(const int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+int is_valid_date(const char *dateString) {
+    if (strlen(dateString) != 10) {
+        return 0; 
+    }
+
+    for (int i = 0; i < 10; i++) {
+        if (i == 2 || i == 5) {
+            if (dateString[i] != '.') {
+                return 0; 
+            }
+        } else {
+            if (!isdigit(dateString[i])) {
+                return 0; 
+            }
         }
     }
-    for (int i = 0; i < 2; i++) {
-        if (a[i+3] != b[i+3]) {
-            return a[i+6] < b[i+6] ? -1 : 1;
+
+    int day, month, year;
+    sscanf(dateString, "%d.%d.%d", &day, &month, &year);
+
+    if (year < 1000 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31) {
+        return 0; 
+    }
+
+    int daysInMonth[] = {31, 28 + is_leap_year(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (day > daysInMonth[month - 1]) {
+        return 0; 
+    }
+
+    return 1; 
+}
+
+int is_valid_time(const char *timeString) {
+    if (strlen(timeString) != 8) {
+        return 0; 
+    }
+
+    for (int i = 0; i < 8; i++) {
+        if (i == 2 || i == 5) {
+            if (timeString[i] != ':') {
+                return 0; 
+            }
+        } else {
+            if (!isdigit(timeString[i])) {
+                return 0; 
+            }
         }
     }
-    return strcmp(a, b);
+
+    int hour, minute, second;
+    sscanf(timeString, "%d:%d:%d", &hour, &minute, &second);
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59) {
+        return 0; 
+    }
+
+    return 1;
+}
+
+int is_valid_state(const char* state) {
+    return (strlen(state) == 1 && (state[0] == 'S'
+     || state[0] == 'F' || state[0] == 'M'));
 }
 
 int get_word_from_file(FILE* inp, char** str_inp) {
@@ -119,81 +171,6 @@ int get_word_from_file(FILE* inp, char** str_inp) {
     return ok;
 }
 
-int read_stop_from_file(FILE* inp, Stop* stop) {
-    char* num = NULL, *date1 = NULL, *time1 = NULL, *date2 = NULL,
-     *time2 = NULL, *marker = NULL;
-
-    int st;
-    int st = get_word_from_file(inp, &num);
-    if (get_word_from_file(inp, &num) || get_word_from_file(inp, &num) ||
-    get_word_from_file(inp, &num) || get_word_from_file(inp, &num) || 
-    get_word_from_file(inp, &num) || get_word_from_file(inp, &num)) {
-        free_everything(6, num, date1, time1, date2, time2, marker);
-        if (getc(inp) == EOF) {
-            return EOF;
-        }
-        fseek(inp, -1, SEEK_CUR);
-        return MEMORY_ISSUES;
-    }
-
-    stop->number = num;
-    stop->arrivalTime = (char*)malloc(sizeof(char) * 20);
-    if (stop->arrivalTime == NULL) {
-        free_everything(6, num, date1, time1, date2, time2, marker);
-        return MEMORY_ISSUES;
-    }
-    sprintf(stop->arrivalTime, "%s %s", date1, time1);
-
-    stop->departureTime = (char*)malloc(sizeof(char) * 20);
-    if (stop->departureTime == NULL) {
-        free_everything(6, num, date1, time1, date2, time2, marker);
-        return MEMORY_ISSUES;
-    }
-    sprintf(stop->departureTime, "%s %s", date2, time2);
-
-    stop->marker = marker[0];
-
-    free_everything(5, date1, time1, date2, time2, marker);
-    return ok;
-}
-
-void create_Stop(Stop* stop) {
-    stop->arrivalTime = NULL;
-    stop->departureTime = NULL;
-    stop->marker = NULL;
-    stop->number = NULL;
-    stop->Coords.x = 0;
-    stop->Coords.x = 0;
-}
-
-void create_RouteNode(RouteNode* rn) {
-    rn->next = NULL;
-    create_Stop(&(rn->stop));
-}
-
-void create_VehicleRoute(VehicleRoute* arr) {
-    arr->number = NULL;
-    arr->next_route = NULL;
-    create_RouteNode(&(arr->route));
-}
-
-int VehicleRoute_append(VehicleRoute* list, Stop stop) {
-    RouteNode needed_route;
-    needed_route = list->route;
-    //create_RouteNode(needed_route);
-    while (!strcmp(list->number, stop.number) || list->next_route != NULL) {
-        needed_route = *(list->next_route);
-    }
-}
-
-/*
-1. итерируемся по файлам. 
-2. Открыли файл
-    Считали координаты
-    Читаем остановки.
-    Встретили остановку, запихнули её к нужному номеру в нужное по времени место.
-*/
-
 
 
 void free_everything(int amount, ...) {
@@ -205,62 +182,308 @@ void free_everything(int amount, ...) {
     }
 }
 
-int main() {
-    // Пути к файлам с данными остановочных пунктов
-    char* filePaths[] = {"file1.txt", "file2.txt", "file3.txt"};
+int read_stop_from_file(FILE* inp, char** bus_number, Stop** stop, Coords crd) {
+    char* num = NULL, *date1 = NULL, *time1 = NULL, *date2 = NULL,
+     *time2 = NULL, *state = NULL;
 
-    // Ваш код для обработки данных с остановочных пунктов
-
-    int numRoutes = sizeof(filePaths) / sizeof(filePaths[0]);
-    VehicleRoute* vehicleRoutes = (VehicleRoute*)malloc(numRoutes * sizeof(VehicleRoute));
-
-    // Инициализация данных о маршрутах транспортных средств
-    for (int i = 0; i < numRoutes; i++) {
-        strcpy(vehicleRoutes[i].location, filePaths[i]);
-        vehicleRoutes[i].route = NULL;
+    int st = ok;
+    if (((st = get_word_from_file(inp, &num)) != ok) || 
+    ((st = get_word_from_file(inp, &date1)) != ok) ||
+    ((st = get_word_from_file(inp, &time1)) != ok) ||
+    ((st = get_word_from_file(inp, &date2)) != ok) ||
+    ((st = get_word_from_file(inp, &time2)) != ok) ||
+    ((st = get_word_from_file(inp, &state)) != ok)) {
+        free_everything(6, num, date1, time1, date2, time2, state);
+        return st;
     }
 
-    // Взаимодействие с пользователем
-    int choice;
-    do {
-        printf("\nМеню:\n");
-        printf("1. Поиск транспортного средства с наибольшим количеством маршрутов\n");
-        printf("2. Поиск транспортного средства, проехавшего больше всех маршрутов\n");
-        printf("3. Поиск транспортного средства с самым длинным маршрутом\n");
-        printf("4. Поиск транспортного средства с самым коротким маршрутом\n");
-        printf("5. Поиск транспортного средства с самой длинной остановкой\n");
-        printf("6. Поиск транспортного средства с самой короткой остановкой\n");
-        printf("7. Поиск транспортного средства с самым большим временем простоя\n");
-        printf("8. Поиск транспортного средства с самым меньшим временем простоя\n");
-        printf("9. Выход\n");
-        printf("Введите номер команды: ");
-        scanf("%d", &choice);
+    *bus_number = num;
 
-        switch (choice) {
-            case 1:
-                findVehicleWithMostRoutes(vehicleRoutes, numRoutes);
-                break;
-            // ... Вызовите соответствующие функции в зависимости от выбора пользователя ...
-            case 9:
-                printf("Выход из программы.\n");
-                break;
-            default:
-                printf("Некорректный ввод. Попробуйте снова.\n");
-                break;
+    if (!is_valid_date(date1) || !is_valid_time(time1) ||
+     !is_valid_date(date2) || !is_valid_time(time2)) {
+        free_everything(5, date1, time1, date2, time2, state);
+        return INVALID_DATE_OR_TIME;
+    }
+
+    char* arrived = (char*)malloc(sizeof(char) * 20);
+    if (arrived == NULL) {
+        free_everything(5, date1, time1, date2, time2, state);
+        return MEMORY_ISSUES;
+    }
+    sprintf(arrived, "%s %s", date1, time1);
+
+    char* departed = (char*)malloc(sizeof(char) * 20);
+    if (departed == NULL) {
+        free_everything(5, date1, time1, date2, time2, state);
+        return MEMORY_ISSUES;
+    }
+    sprintf(departed, "%s %s", date2, time2);
+    free_everything(4, date1, time1, date2, time2);
+
+    if (!is_valid_state(state)) {
+        free_everything(3, arrived, departed, state);
+        return INVALID_STATE;
+    }
+
+    st = init_stop(stop, arrived, departed, state[0], crd);
+    free(state);
+    return st;
+}
+
+int process_file(FILE* inp, Bus** data_base) {
+    int st = ok;
+    Stop* new_st = NULL;
+    char* bus_number = NULL;
+    Coords cd;
+
+    char* x = NULL, *y = NULL;
+    st = get_word_from_file(inp, &x);
+    if (st != ok) {
+        if (st == EOF) {
+            return INVALID_COORDS;
         }
+        return st;
+    }
+    st = get_word_from_file(inp, &y);
+    if (st != ok) {
+        free(x);
+        if (st == EOF) {
+            return INVALID_COORDS;
+        }
+        return st;
+    }
 
-    } while (choice != 9);
+    if (!is_valid_int(x) || !is_valid_int(y)) {
+        free(x); free(y);
+        return INVALID_COORDS;
+    }
 
-    // Освобождение памяти
-    for (int i = 0; i < numRoutes; i++) {
-        RouteNode* current = vehicleRoutes[i].route;
-        while (current != NULL) {
-            RouteNode* temp = current;
-            current = current->next;
-            free(temp);
+    // отвалидировать координаты, перевести в цифры и записать в структуру
+    cd.x = atoi(x), cd.y = atoi(y);
+    free(x); free(y);
+    if (errno == ERANGE) {
+        return OVERFLOWED;
+    }
+
+    while ((st = read_stop_from_file(inp, &bus_number, &new_st, cd)) == ok) {
+        st = append_stop_in_bus_list(data_base, bus_number, new_st);
+        if (st != ok) {
+            free_stop(new_st);
+            return st;
         }
     }
-    free(vehicleRoutes);
 
-    return 0;
+    if (st == EOF) {
+        return ok;
+    }
+    free(bus_number);
+    return st;
+}
+
+int create_data_base(Bus** data_base, int argc, char** argv) {
+    *data_base = NULL;
+    for (int i = 1; i < argc; i++) {
+        FILE* inp = fopen(argv[i], "r");
+        if (inp == NULL) {
+            return UNABLE_TO_OPEN_A_FILE;
+        }
+
+        int st = process_file(inp, data_base);
+        fclose(inp);
+        if (st != ok) {
+            return st;
+        }
+    }
+    return ok;
+}
+
+void print_menu() {
+    printf("\nEnter one of the suggested letters and the app will display a bus, which:\n");
+    printf("A. Drove the biggest amount of all routes.\n");
+    printf("B. Drove the smallest amount of all routes.\n");
+    printf("C. Drove the longest path.\n");
+    printf("D. Drove the shortest path.\n");
+    printf("E. Drove the longest route.\n");
+    printf("F. Drove the shortest route.\n");
+    printf("G. Has the biggest downtime\n");
+    printf("H. Has the smallest downtime\n");
+    printf("I. Stayed at it`s stop the longest.\n");
+    printf("J. Stayed at it`s stop the shortest.\n");
+    printf("K. Exit the program\n\n");
+}
+
+int main(int argc, char** argv) {
+    argc = 5;
+    //argv[1] = "empty.txt";
+    argv[1] = "stop1.txt";
+    argv[2] = "stop2.txt";
+    argv[3] = "stop3.txt";
+    argv[4] = "stop4.txt";
+
+
+    Bus* data_base = NULL;
+
+    int st = create_data_base(&data_base, argc, argv);
+    if (st != ok) {
+        free_bus_list(data_base);
+        print_error(st);
+        return 1;
+    }
+
+    print_bus_list(data_base);
+
+    print_menu();
+
+    char* command = NULL;
+    while ((st = get_word_from_file(stdin, &command)) == ok) {
+        if (strlen(command) == 1 && command[0] >= 'A' && command[0] <= 'K') {
+            char* bus_name = NULL;
+            if (command[0] == 'A') {
+                st = most_routes(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the biggest amount of all routes is: %s\n", bus_name);
+                }
+            }
+            else if (command[0] == 'B') {
+                st = least_routes(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the smallest amount of all routes is: %s\n", bus_name);
+                }
+            }
+            else if (command[0] == 'C') {
+                st = longest_path(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the longest path is: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'D') {
+                st = shortest_path(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the shortest path is: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'E') {
+                st = longest_route(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the longest route is: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'F') {
+                st = shortest_route(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the shortest route is: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'G') {
+                st = longest_stop(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the biggest downtime is: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'H') {
+                st = shortest_stop(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus with the smallest downtime is: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'I') {
+                st = longest_own_stop(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus, which stayed at it`s stop the longest: %s\n", bus_name);
+                }
+                
+            }
+            else if (command[0] == 'J') {
+                st = shortest_own_stop(data_base, &bus_name);
+                if (st != ok && st != NO_SUCH_BUS) {
+                    break;
+                }
+                if (bus_name == NULL) {
+                    printf("No such bus!\n");
+                }
+                else {
+                    printf("Bus, which stayed at it`s stop the shortest: %s\n", bus_name);
+                }
+            }
+            else if (command[0] == 'K') {
+                break;
+            }
+        }
+        else {
+            printf("Incorrect command! Try again.\n");
+        }
+        print_menu();
+        free(command);
+    }
+
+    free(command);
+    
+
+    free_bus_list(data_base);
+
+    if (st != ok) {
+        print_error(st);
+    }
+    
+    return 0;    
 }
