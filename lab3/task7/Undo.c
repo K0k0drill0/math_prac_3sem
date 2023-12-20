@@ -165,7 +165,7 @@ int undo(UndoDeque* dq, Liver** data_base) {
         if (st != ok) {
             return st;
         }
-        last->now = NULL;
+        // last->now = NULL;
 
         st = delete_liver(data_base, found);
         if (st != ok) {
@@ -191,7 +191,34 @@ int undo(UndoDeque* dq, Liver** data_base) {
         }
     }
     else {
-        //
+        Liver* found = NULL;
+        st = find_liver(*data_base, last->now, &found);
+        if (st != ok) {
+            return st;
+        }
+        // last->now = NULL;
+
+        st = delete_liver(data_base, found);
+        if (st != ok) {
+            return st;
+        }
+
+        Liver* new = (Liver*)malloc(sizeof(Liver));
+        if (new == NULL) {
+            return MEMORY_ISSUES;
+        }
+
+        st = copy_liver(new, last->then);
+        if (st != ok) {
+            free_liver_data(new);
+            return st;
+        }
+
+        st = insert_liver(data_base, new);
+        if (st != ok) {
+            free_liver_data(new);
+            return st;
+        }
     }
 
     return pop_right_UndoDeque(dq);

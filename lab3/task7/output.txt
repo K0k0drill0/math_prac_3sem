@@ -27,48 +27,44 @@ habl
 W
 13532.0
 
-________________________________________________________________________
-Surname: Astakhova
-Name: Anastasia
-Last name: Sergeevna
-Birthday: 02.01.2005
-Gender: W
-Wage: 10000000000000.000000
+D
+Astakhova
 
-Surname: Chmo
-Name: Gandonovich
-Last name: Huesosov
-Birthday: 01.01.2005
-Gender: M
-Wage: 0.000000
 
-Surname: Jopa
-Name: Lohov
-Last name: Popovich
-Birthday: 01.02.2003
-Gender: M
-Wage: 123.000000
 
-Surname: Qwerty
-Name: Asdfgh
-Last name: Zxcvbnm
-Birthday: 02.03.2001
-Gender: W
-Wage: 6543.000000
 
-Surname: Loh
-Name: Geevich
-Last name: 
-Birthday: 01.01.1995
-Gender: M
-Wage: 123567980.000000
 
-Surname: Astakhova
-Name: Nenastya
-Last name: Olegovna
-Birthday: 21.10.1234
-Gender: W
-Wage: 12435.000000
+Y
+A
+Jopa
+Lohov
+Popovich
+01.02.2003
+M
+123.0
+D
+Loh
+
+
+
+
+
+Y
+A
+Shnafljs
+jashhjqw
+habl
+06.01.1234
+W
+13532.0
+P
+output.txt
+U
+U
+P
+output.txt
+
+
 
 ________________________________________________________________________
 Surname: Astakhova
@@ -85,19 +81,27 @@ Birthday: 01.01.2005
 Gender: M
 Wage: 0.000000
 
-Surname: Jopa
-Name: Lohov
-Last name: Popovich
-Birthday: 01.02.2003
-Gender: M
-Wage: 123.000000
+Surname: Astakhova
+Name: Nenastya
+Last name: Olegovna
+Birthday: 21.10.1234
+Gender: W
+Wage: 12435.000000
 
-Surname: Loh
-Name: Geevich
-Last name: 
-Birthday: 01.01.1995
+________________________________________________________________________
+Surname: Astakhova
+Name: Anastasia
+Last name: Sergeevna
+Birthday: 02.01.2005
 Gender: M
-Wage: 123567980.000000
+Wage: 10000000000000.000000
+
+Surname: Chmo
+Name: Gandonovich
+Last name: Huesosov
+Birthday: 01.01.2005
+Gender: M
+Wage: 0.000000
 
 Surname: Astakhova
 Name: Nenastya
@@ -105,4 +109,5 @@ Last name: Olegovna
 Birthday: 21.10.1234
 Gender: W
 Wage: 12435.000000
+
 

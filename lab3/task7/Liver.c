@@ -141,6 +141,11 @@ int insert_liver(Liver** head, Liver* new) {
         *head = new;
         return ok;
     }
+    if (datecmp((*head)->birthday, new->birthday) < 1) {
+        new->next = *head;
+        *head = new;
+        return ok;
+    }
 
     Liver* prev = *head; 
     Liver* tmp = prev->next;
@@ -260,8 +265,8 @@ int delete_liver(Liver** data_base, Liver* will_be_deleted) {
     }
 
     if (*data_base == will_be_deleted) {
-        free_liver_data(*data_base);
-        *data_base = NULL;
+        *data_base = will_be_deleted->next;
+        free_liver_data(will_be_deleted);
         return ok;
     }
 

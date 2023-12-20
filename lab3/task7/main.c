@@ -363,7 +363,7 @@ int add_user_interaction(Liver** data_base, UndoDeque* dq) {
     return st;
 }
 
-int modificate_user_interaction(Liver** data_base) {
+int modificate_user_interaction(Liver** data_base, UndoDeque* dq) {
     // Сначала запрашиваем жителя, чтобы найти того, которого нужно модифицировать
     // Начинаем запрашивать жителя с модификациями. Те поля, что останутся пустыми, не будут модифицированы
     // Те, что не пустые, меняем в найденном жителе.
@@ -382,20 +382,98 @@ int modificate_user_interaction(Liver** data_base) {
 
     printf("Input new info about user. If you don`t want to modificate field, just press enter.\n");
 
-    Liver* new_liver = NULL;
-    st = get_liver_from_user(&new_liver);
+    Liver* new_liver_data = NULL;
+    st = get_liver_from_user(&new_liver_data);
     if (st != ok) {
+        free_liver_data(new_liver_data);
+        return st;
+    }
+
+    if (!is_valid_liver_for_change(new_liver_data)) {
+        free_liver_data(new_liver_data);
+        return INVALID_DATA_ABOUT_USER;
+    }
+
+    Liver* new_liver = NULL;
+    st = init_liver(&new_liver, NULL, NULL, NULL, NULL, 'N', 0.0);
+    if (st != ok) {
+        free_liver_data(new_liver_data);
+        return st;
+    }
+    st = copy_liver(new_liver, found);
+    if (st != ok) {
+        free_liver_data(new_liver_data);
         free_liver_data(new_liver);
         return st;
     }
 
-    if (!is_valid_liver_for_change(new_liver)) {
+    st = change_liver(new_liver, new_liver_data);
+    if (st != ok) {
+        free_liver_data(new_liver_data);
         free_liver_data(new_liver);
-        return INVALID_DATA_ABOUT_USER;
+        return st;
     }
 
-    st = change_liver(found, new_liver);
+    // block for undo
+    Action* for_dq = NULL;
+    st = init_Action(&for_dq);
     if (st != ok) {
+        return st;
+    }
+
+    Liver* for_dq_lv = NULL;
+    st = init_liver(&for_dq_lv, NULL, NULL, NULL, NULL, 'N', 0.0);
+    if (st != ok) {
+        free_action(for_dq);
+        return st;
+    }
+
+    st = copy_liver(for_dq_lv, found);
+    if (st != ok) {
+        free_liver_data(for_dq_lv);
+        free_action(for_dq);
+        return st;
+    }
+
+    for_dq->then = for_dq_lv;
+
+    Liver* for_dq_lv_now = NULL;
+    st = init_liver(&for_dq_lv_now, NULL, NULL, NULL, NULL, 'N', 0.0);
+    if (st != ok) {
+        free_liver_data(for_dq_lv);
+        free_action(for_dq);
+        return st;
+    }
+
+    st = copy_liver(for_dq_lv_now, new_liver);
+    if (st != ok) {
+        free_liver_data(for_dq_lv);
+        free_liver_data(for_dq_lv_now);
+        free_action(for_dq);
+        return st;
+    }
+
+    for_dq->now = for_dq_lv_now;
+
+    st = add_action(dq, for_dq);
+    if (st != ok) {
+        free_liver_data(for_dq_lv);
+        free_liver_data(for_dq_lv_now);
+        free_action(for_dq);
+        return st;
+    }
+    // end_of_block
+
+    st = delete_liver(data_base, found);
+    if (st != ok) {
+        free_liver_data(new_liver_data);
+        free_liver_data(new_liver);
+        return st;
+    }
+
+    st = insert_liver(data_base, new_liver);
+    if (st != ok) {
+        free_liver_data(new_liver_data);
         free_liver_data(new_liver);
         return st;
     }
@@ -474,6 +552,8 @@ int user_interaction(Liver** data_base) {
     printf("Welcome to the app!\n");
     print_menu();
 
+    int undodeque_needs_to_be_freed = 0;
+
     char* request = NULL;
     while ((st = read_line(stdin, &request) == ok)) {
         cut(request);
@@ -490,6 +570,13 @@ int user_interaction(Liver** data_base) {
         }
         q = request[0];
         free(request);
+
+        if (q != 'U' && q != 'E') {
+            if (undodeque_needs_to_be_freed) {
+                free_UndoDeque(&dq);
+                undodeque_needs_to_be_freed = 0;
+            }
+        }
 
         if (q == 'F') {
             Liver* found = NULL;
@@ -508,7 +595,7 @@ int user_interaction(Liver** data_base) {
             }
         }
         else if (q == 'M') {
-            st = modificate_user_interaction(data_base);
+            st = modificate_user_interaction(data_base, &dq);
             if (st == NO_SUCH_USER || st == INVALID_DATA_ABOUT_USER) {
                 print_error(st);
                 printf("Try again.\n");
@@ -563,11 +650,15 @@ int user_interaction(Liver** data_base) {
             fclose(outp);
         }
         else if (q == 'U') {
+            undodeque_needs_to_be_freed = 1;
             st = undo(&dq, data_base);
-            if (st != ok) {
+            if (st != ok && st != NO_UNDO_ACTION) {
                 free_UndoDeque(&dq);
                 return st;
-            }   
+            }
+            if (st == NO_UNDO_ACTION) {
+                printf("No undo action!\n");
+            }
         }
         else if (q == 'E') {
             free_UndoDeque(&dq);
