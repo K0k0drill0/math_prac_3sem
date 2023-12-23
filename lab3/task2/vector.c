@@ -371,7 +371,6 @@ int solve(
         }
     }
     return ok;
-
 }
 
 int main() {

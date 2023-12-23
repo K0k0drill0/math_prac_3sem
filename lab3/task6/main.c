@@ -171,8 +171,6 @@ int get_word_from_file(FILE* inp, char** str_inp) {
     return ok;
 }
 
-
-
 void free_everything(int amount, ...) {
     va_list args;
     va_start(args, amount);

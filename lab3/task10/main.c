@@ -217,8 +217,6 @@ int get_word_from_file(FILE* inp, char** str_inp) {
     return ok;
 }
 
-
-
 int main(int argc, char** argv) {
     // argc = 3;
     // argv[1] = "input.txt";

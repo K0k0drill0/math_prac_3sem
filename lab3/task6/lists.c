@@ -153,22 +153,6 @@ int append_stop_in_list(Stop** head, Stop* stop) {
 	return ok;
 }
 
-// int find_bus_in_list_by_number(const Bus* head, const char* number, Bus** ans) {
-// 	Bus* tmp = head;
-// 	while (tmp != NULL && strcmp(tmp->number, number)) {
-// 		tmp = tmp->next;
-// 	}
-
-// 	if (tmp == NULL) {
-// 		*ans = NULL;
-// 	}
-// 	else {
-// 		*ans = tmp;
-// 	}
-
-// 	return ok;
-// }
-
 int print_stop(const Stop* st) {
 	if (st == NULL) {
 		return INVALID_FUNCTION_ARGUMENT;
