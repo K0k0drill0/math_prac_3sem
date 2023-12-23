@@ -165,8 +165,8 @@ int is_valid_expression(const char* str) {
         if (is_operator(str[ind])) {
             if (is_unar(str[ind])) {
                 if (!((ind == 0 && (is_allowed_char(str[ind+1]) || str[ind] == '('))
-                 || (((ind != 0 && (is_allowed_char(str[ind-1]) || str[ind-1] == '(' || str[ind-1] == ')')))
-                  && is_allowed_char(str[ind+1]) || str[ind+1] == '('))) {
+                 || (((ind != 0 && (is_allowed_char(str[ind-1]) || str[ind-1] == '(' || str[ind-1] == ')' || is_operator(str[ind-1]))))
+                  && is_allowed_char(str[ind+1]) || str[ind+1] == '(') )) {
                     return INVALIND_OPERATOR_POSTURE;
                 }
             }
@@ -176,14 +176,14 @@ int is_valid_expression(const char* str) {
                         return INVALIND_OPERATOR_POSTURE;
                     }
                     if (ind == 0 || (!is_allowed_char(str[ind-1]) && str[ind-1] != ')') ||
-                     (!is_allowed_char(str[ind+2]) && str[ind+2] != '(')) {
+                     (!is_allowed_char(str[ind+2]) && str[ind+2] != '(' && !is_unar(str[ind+1]))) {
                         return INVALIND_OPERATOR_POSTURE;
                     }
                     ind++;
                 }
                 else {
                     if (ind == 0 || (!is_allowed_char(str[ind-1]) && str[ind-1] != ')') ||
-                    (!is_allowed_char(str[ind+1]) && str[ind+1] != '(')) {
+                    (!is_allowed_char(str[ind+1]) && str[ind+1] != '(' && !is_unar(str[ind+1]))) {
                         return INVALIND_OPERATOR_POSTURE;
                     }
                 }    
@@ -195,6 +195,9 @@ int is_valid_expression(const char* str) {
             }
             if (str[ind+1] == '(' || (ind != 0 && str[ind-1] == ')')) {
                 return INVALID_EXPRESSION;   
+            }
+            if (is_unar(str[ind+1])) {
+                return INVALIND_OPERATOR_POSTURE;
             }
         }
 
