@@ -470,23 +470,24 @@ int process_file(FILE* inp, FILE* outp, Memory* mem) {
 }
 
 int are_equal_files(const char* f1, const char* f2) {
-    char fp1[PATH_MAX];
-    char fp2[PATH_MAX];
+    int l1 = strlen(f1);
+    int l2 = strlen(f2);
 
-    char* st = realpath(f1, fp1);
-    if (st == NULL) {
-        return UNABLE_TO_OPEN_FILE;
+    int i1 = l1, i2 = l2;
+
+    while ((f1[i1] != '\\' && f1[i1] != '/') && (f2[i2] != '\\' && f2[i2] != '/')
+    && i1 >= 0 && i2 >= 0) {
+        if (f1[i1] != f2[i2]) {
+            return 0;
+        }
+        i1--;
+        i2--;
     }
 
-    st = realpath(f2, fp2);
-    if (st == NULL) {
-        return UNABLE_TO_OPEN_FILE;
+    if ((f1[i1] != '\\' && f1[i1] != '/' && i1 > 0) || ((f2[i2] != '\\' && f2[i2] != '/') && i2 > 0)) {
+        return 0;
     }
-
-    if (strcmp(fp1, fp2) == 0) {
-        return EQUAL_FILES;
-    }
-    return ok;
+    return 1;
 }
 
 int is_valid_args(int argc, char** argv) {
@@ -498,14 +499,11 @@ int is_valid_args(int argc, char** argv) {
         return INVALID_FLAG;
     }
 
-    // int st = ok;
-    // if (argc == 4) {
-    //     if ((st = are_equal_files(argv[1], argv[3])) != ok) {
-    //         return st;
-    //     }
-    // }
-
-    // if_equal_filenames
+    if (argc == 4) {
+        if (are_equal_files(argv[1], argv[3])) {
+            return EQUAL_FILES;
+        }
+    } 
 
     return ok;
 }
