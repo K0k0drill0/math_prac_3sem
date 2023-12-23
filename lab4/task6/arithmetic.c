@@ -49,5 +49,5 @@ int priority(const char c) {
 }
 
 int is_allowed_char(const char c) {
-    return (isupper(c) || c == '0' || c == '1');
+    return (isalpha(c) || c == '0' || c == '1');
 }
