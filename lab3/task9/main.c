@@ -124,6 +124,7 @@ int interaction_with_user(Node** root) {
 
         if (q == '1') {
             char* word_tryna_find = NULL;
+            printf("Input the word, you want to know about.\n");
             st = read_word_from_file(stdin, &word_tryna_find);
             if (st != ok) {
                 return st;
@@ -141,6 +142,7 @@ int interaction_with_user(Node** root) {
         }
         else if (q == '2') {
             char* N_word = NULL;
+            printf("Input N.\n");
             st = read_word_from_file(stdin, &N_word);
             if (st != ok) {
                 return st;

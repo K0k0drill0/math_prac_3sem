@@ -1,0 +1,12 @@
+read(A, 10);
+read(B, 10);
+
+C:=A&B;
+D:=\a;
+C:=A+B;
+
+write(A, 2);
+
+read(A, 15);
+
+write(A, 2);

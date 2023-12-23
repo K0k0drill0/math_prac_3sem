@@ -1,0 +1,38 @@
+Processing read command...
+Before: A is unitialised.
+After: A = 32.
+
+
+Processing read command...
+Before: B is unitialised.
+After: B = 123.
+
+
+Processing binary command...
+Before: C is unitialised.
+After: C = 32.
+
+
+Processing unary command...
+Before: D is unitialised.
+After: D = -33.
+
+
+Processing binary command...
+Before: C = 32.
+After: C = 123.
+
+
+Processing write command...
+A = 100000 in base 2
+
+
+Processing read command...
+Before: A = 32.
+After: A = 706.
+
+
+Processing write command...
+A = 1011000010 in base 2
+
+
