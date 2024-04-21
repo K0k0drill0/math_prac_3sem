@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
+#include <string.h>
 
 #include "errors.h"
 #include "data_structs.h"
@@ -18,7 +19,9 @@
 
 #include "map/Dynamic_array.h"
 
-int setup_configuration(FILE* inp, Map* Departments, char** start_time, char** finish_time) {
+int setup_configuration(FILE* inp, Map* Departments, char** start_time,
+ char** finish_time, unsigned int *deps_amount, char*** deps_names) {
+    
     char *pq_type = NULL;
     char *map_type = NULL;
      *start_time = NULL;
@@ -108,6 +111,17 @@ int setup_configuration(FILE* inp, Map* Departments, char** start_time, char** f
         return st;
     }
 
+    *deps_amount = arr.size;
+    *deps_names = (char**)malloc(sizeof(char*) * *deps_amount);
+    if (*deps_names == NULL) {
+        str_pair_arr_free(&arr);
+        free(*start_time);
+        free(*finish_time);
+        Map_free(Departments);
+        
+        return MEMORY_ISSUES;
+    }
+
     for (int i = 0; i < arr.size; i++) {
         char* name = NULL, *op_am = NULL;
 
@@ -116,6 +130,8 @@ int setup_configuration(FILE* inp, Map* Departments, char** start_time, char** f
 
         arr.data[i].name = NULL;
         arr.data[i].op_am = NULL;
+
+        (*deps_names)[i] = name;
 
         unsigned int iop_am = atoi(op_am);
         if (errno == ERANGE || iop_am < 10 || iop_am > 50) {
@@ -127,6 +143,8 @@ int setup_configuration(FILE* inp, Map* Departments, char** start_time, char** f
             free(op_am);
 
             Map_free(Departments);
+
+            free(*deps_names);
 
             return INVALID_CONFIG_FILE;
         }
@@ -146,6 +164,8 @@ int setup_configuration(FILE* inp, Map* Departments, char** start_time, char** f
 
             Map_free(Departments);
 
+            free(*deps_names);
+
             return st;
         }
 
@@ -159,84 +179,82 @@ int setup_configuration(FILE* inp, Map* Departments, char** start_time, char** f
 
             Map_free(Departments);
 
+            free(*deps_names);
+
             return st;
         }
     }
+
+    
     str_pair_arr_free(&arr);
 
     return ok;
 }
 
-int build_application(FILE* inp, Application** res, int* runtime_error) {
-    if (inp == NULL || res == NULL) {
+int build_application(Unvalidated_application* source, Application** res, int max_priority) {
+    if (source == NULL || res == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
 
-    int st = ok;
+    int runtime_error = ok;
 
-    char* time = NULL;
-    char* message_id = NULL;
-    char* priority = NULL;
-    char* dep_id = NULL;
-    char* text = NULL;
-
-    *runtime_error = ok;
-
-    st = read_application_data(inp, &time, &message_id, &priority, &dep_id, &text, runtime_error);
-    if (st != ok || *runtime_error != ok) {
-        free_all(5, time, message_id, priority, dep_id, text);
+    int st = validate_application_data(source->arrival_time, source->id, source->priority, source->dep_id, source->text, &runtime_error);
+    if (st != ok) {
+        Unvalidated_application_free(source);
         return st;
     }
 
-    st = validate_application_data(time, message_id, priority, dep_id, text, runtime_error);
-    if (st != ok || *runtime_error != ok) {
-        free_all(5, time, message_id, priority, dep_id, text);
-        return st;
-    } 
-
-    int imessage_id = atoi(message_id);
-    int ipriority = atoi(priority);
-
-    if (errno == ERANGE) {
-        free_all(5, time, message_id, priority, dep_id, text);
-        *runtime_error = OVERFLOW;
+    if (runtime_error != ok) {
+        //log_this
+        print_runtime_error(stdout, runtime_error);
+        Unvalidated_application_free(source);
         return ok;
     }
-    free(message_id);
-    free(priority);
 
-    remove_quotes(text);
+    int ipriority = atoi(source->priority);
+    int iid = atoi(source->id);
+    //free_all(source->priority, source->id);
 
-    //Application* a = NULL;
-    st = initiate_application(res, time, ipriority, text, imessage_id, dep_id);
+    if (errno == ERANGE || ipriority > max_priority) {
+        //log_this
+        (errno == ERANGE) ? print_runtime_error(stdout, OVERFLOW) 
+        : print_runtime_error(stdout, INVALID_PRIORITY);
+
+        print_runtime_error(stdout, runtime_error);
+        Unvalidated_application_free(source);
+        return ok;
+    }
+
+    remove_quotes(source->text);
+
+    st = initiate_application(res, source->arrival_time,
+     ipriority, source->text, iid, source->dep_id);
+
     if (st != ok) {
-        free_all(5, time, message_id, priority, dep_id, text);
+        Unvalidated_application_free(source);
         return st;
     }
+
+    free_all(2, source->priority, source->id);
+
+    Unvalidated_application_set_null(source);
 
     return ok;
 }
 
-int handle_file_with_applications(FILE* inp, Application_arr* arr) {
+int handle_file_with_applications(FILE* inp, Unvalidated_application_arr* arr) {
     if (inp == NULL || arr == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
 
     int st = ok;
     int runtime_error = ok;
-    Application* a = NULL;
+    Unvalidated_application a;
     
-    while ((st = build_application(inp, &a, &runtime_error)) == ok) {
-        if (runtime_error != ok) {
-            //log_it
-            print_runtime_error(stdout, runtime_error);  // tmp_log
-            runtime_error = ok;
-            continue;
-        }
-
-        st = Application_arr_push_back(arr, a);
+    while ((st = read_application_data(inp, &a)) == ok) {
+        st = Unvalidated_application_arr_push_back(arr, a);
         if (st != ok) {
-            free_application(a);
+            Unvalidated_application_free(&a);
             return st;
         }
     }
@@ -248,7 +266,7 @@ int handle_file_with_applications(FILE* inp, Application_arr* arr) {
     return st;
 }
 
-int handle_files_with_applications(int argc, char** argv, Application_arr* arr) {
+int handle_files_with_applications(int argc, char** argv, Unvalidated_application_arr* arr) {
     if (argv == NULL || arr == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
@@ -269,13 +287,95 @@ int handle_files_with_applications(int argc, char** argv, Application_arr* arr) 
         }
     }
 
-    Application_arr_sort(*arr);
+    //Application_arr_sort(*arr);
 
     return ok;
 }
 
-int handle_applications(Application_arr arr, Map departments) {
+int Department_handle_overload(Department* dep, Map* Departments,
+ unsigned int deps_amount, char** deps_names) {
+
+    if (dep == NULL || Departments == NULL || deps_names == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+
+    if (dep->load_coeff < dep->overload_coeff) {
+        return ok;
+    }
+
+    int st = ok;
+
+    Department* dep_min_load = dep;
+    Department* dep_tmp = NULL;
+
+    int need_transfer;
+    st = Priority_queue_size(dep->applications, &need_transfer);
+    if (st != ok) {
+        return st;
+    }
+
+    //int res_load_coeff = dep->load_coeff;
+
+    for (int i = 0; i < deps_amount; i++) {
+        st = Map_find(Departments, deps_names[i], &dep_tmp);
+        if (st != ok) {
+            return st;
+        }
+
+        if (dep_tmp == dep_min_load) {
+            continue;
+        }
+
+        int tmp_pq_size;
+        st = Priority_queue_size(dep_tmp->applications, &tmp_pq_size);
+        if (st != ok) {
+            return st;
+        }
+
+        int res_load_coeff = (need_transfer + tmp_pq_size) / dep_tmp->operators_amount;
+        if (res_load_coeff < dep_min_load->load_coeff) {
+            dep_min_load = dep_tmp;
+        }
+    }
+
+    if (dep_min_load == dep) {
+        return ok;
+    }
+
+    st = Priority_queue_meld(dep_min_load->applications, dep_min_load->applications, dep->applications);
+    if (st != ok) {
+        return st;
+    }
+
+    return ok;
+
+}
+
+int Departments_handle_finish_tasks(Map* Departments, char* tmp_time,
+ unsigned int deps_amount, char** deps_names) {
+
+    if (Departments == NULL || deps_names == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+
+    int st = ok;
+
+    Department* tmp_dep = NULL;
     
+    for (int i = 0; i < deps_amount; i++) {
+        st = Map_find(Departments, deps_names[i], &tmp_dep);
+        if (st != ok) {
+            return st;
+        }
+
+        st = Department_handling_finishing(tmp_dep, tmp_time);
+        if (st != ok) {
+            return st;
+        }
+    }   
+
+    return ok;
+
 }
 
 int is_valid_args(int argc, char** argv) {
@@ -294,32 +394,130 @@ int is_valid_args(int argc, char** argv) {
 
 int main(int argc, char** argv) {
 
-    argc = 5;
+    argc = 4;
 
     argv[1] = "20";
     argv[2] = "config";
     argv[3] = "application1";
     argv[4] = "application2";
 
+    FILE* config = fopen(argv[2], "r");
+    if (config == NULL) {
+        print_error(stdout, UNABLE_TO_OPEN_FILE);
+        return -1;
+    }
+
+    int  max_priority = atoi(argv[1]);
+
     int st = ok;
 
-    Application_arr arr;
+    Map Departments;
+    char* start_time = NULL;
+    char* finish_time = NULL;
 
-    st = Application_arr_init(&arr);
+    unsigned int deps_amount;
+    char** deps_names = NULL;
+
+    st = setup_configuration(config, &Departments, &start_time, &finish_time, &deps_amount, &deps_names);
+    if (st != ok) {
+        fclose(config);
+        print_error(stdout, st);
+        return 1;
+    }
+    fclose(config);
+    //return 0;
+
+    Unvalidated_application_arr arr;
+
+    st = Unvalidated_application_arr_init(&arr);
     if (st != ok) {
         print_error(stdout, st);
+        
+        Map_free(&Departments);
+        free(deps_names);
+        free(start_time);
+        free(finish_time);
         return 1;
     }
 
     st = handle_files_with_applications(argc, argv, &arr);
     if (st != ok) {
         print_error(stdout, st);
-        Application_arr_free(&arr);
+        Unvalidated_application_arr_free(&arr);
+
+        Map_free(&Departments);
+        free(deps_names);
+        free(start_time);
+        free(finish_time);
         return 1;
     }
 
-    Application_arr_print(stdout, arr);
-    Application_arr_free(&arr);
+    char* tmp_time = start_time;
 
+    for (int i = 0; i < arr.size; i++) {
+        Application* tmp_a = NULL;
+        
+        st = build_application(&(arr.data[i]), &tmp_a, max_priority);
+        if (st != ok) {
+            break;
+        }
+
+        if (tmp_a == NULL) {
+            // probably_log
+            continue;
+        }
+
+        tmp_time = tmp_a->arrival_time;
+        if (strcmp(tmp_time, finish_time) > 0 || strcmp(tmp_time, start_time) < 0) {
+            free_application(tmp_a);
+            break;
+        }
+
+        st = Departments_handle_finish_tasks(&Departments, tmp_time,
+         deps_amount, deps_names);
+        if (st != ok) {
+            continue;
+        }
+
+        Department* tmp_dep = NULL;
+        st = Map_find(&Departments, tmp_a->dep_id, &tmp_dep);
+        if (st != ok) {
+            // free_tmp_a??
+            break;
+        }
+
+        if (tmp_dep == NULL) {
+            //log_this
+            //free_applicaation
+            continue;
+        }
+
+        st = Department_give_application(tmp_dep, tmp_a, tmp_time);
+        if (st != ok) {
+            break;
+        }
+
+        st = Department_handle_overload(tmp_dep, &Departments, deps_amount, deps_names);
+        if (st != ok) {
+            break;
+        }
+    }
+
+
+    st = Departments_handle_finish_tasks(&Departments, finish_time,
+         deps_amount, deps_names);
+
+    Unvalidated_application_arr_free(&arr);
+
+    Map_free(&Departments);
+    free(deps_names);
+    free(start_time);
+    free(finish_time);
+
+    if (st != ok) {
+        print_error(stdout, st);
+        return 1;
+    }
+    
     return 0;
 }

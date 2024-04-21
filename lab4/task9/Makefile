@@ -56,7 +56,7 @@ priority_queue.o: priority_queue/priority_queue.c $(UT_H) $(PQ_H)
 
 #_____________________________MAP_______________________
 
-map.o: map/map.c $(UT_H) $(MAP_H)
+map.o: map/map.c $(UT_H) $(MAP_H) 
 	$(CC) $(CFLAGS) -c map/map.c
 
 Department.o: Department.c Department.h $(PQ_H) $(UT_H) 

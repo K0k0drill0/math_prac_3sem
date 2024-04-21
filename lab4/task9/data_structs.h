@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 typedef long long ll;
+typedef unsigned long long ull;
 
 typedef struct {
     char* arrival_time; // format "YYYY-MM-DDTHH:MM:SSZ"
@@ -53,11 +54,13 @@ typedef struct Unvalidated_application_arr{
 
 int Unvalidated_application_init(Unvalidated_application* res, char* arrival_time, char* priority, char* text, char* id, char* dep_id);
 void Unvalidated_application_free(Unvalidated_application* a);
+int Unvalidated_application_set_null(Unvalidated_application* a);
 
 int Unvalidated_application_arr_init(Unvalidated_application_arr* arr);
 int Unvalidated_application_arr_push_back(Unvalidated_application_arr* arr, Unvalidated_application el);
 //int Unvalidated_application_arr_pop_back(Unvalidated_application* arr, Unvalidated_application* el);
-void Unvalidated_application_arr_free(Unvalidated_application* arr);
+void Unvalidated_application_arr_free(Unvalidated_application_arr* arr);
+void Unvalidated_application_arr_print(FILE* stream, Unvalidated_application_arr arr);
 
 
 int initiate_application ( 
@@ -98,5 +101,7 @@ int ctoi(char ch);
 int bpow_safely(ll base, ll pow, ll* res);
 int mult_safely(ll arg_1, ll arg_2, ll* res);
 
+int iso_time_add(char* time, ull add_s, char** res);
+unsigned rand_32();
 
 #endif

@@ -22,11 +22,6 @@ int read_config_file(
 
 int read_application_data(
     FILE* stream,
-    char** time, 
-    char** message_id, 
-    char** priority, 
-    char** dep_id, 
-    char** text, 
-    int* runtime_error);
+    Unvalidated_application* a);
 
 #endif

@@ -102,23 +102,16 @@ int validate_application_data(
     int* runtime_error) {
     // <время поступления заявки> <приоритет> <идентификатор отделения> “<текстзаявки>"
 
-    if (
-    time == NULL ||
-    message_id == NULL ||
-    priority == NULL ||
-    dep_id == NULL ||
-    text == NULL
-    ) {
+    //runtime_error = ok;
+
+    if (runtime_error == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
 
-    *runtime_error = ok;
-
-    // if (!is_valid_time_ISO_8601(time) || 
-    //     !is_valid_uint(message_id) ||
-    //     !is_valid_uint(priority)) {
-    //     return 0;
-    // }
+    if (time == NULL || message_id == NULL || priority == NULL || dep_id == NULL || text == NULL) {
+        *runtime_error = INVALID_APPLICATION;
+        return ok;
+    }
 
     if (!is_valid_time_ISO_8601(time)) {
         *runtime_error = INVALID_TIME;

@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 
 #include "Department.h"
 #include "errors.h"
@@ -49,6 +50,40 @@ void Operator_free(Operator* op) {
 
     //return ok;
 }
+
+
+int Operator_give_task(Department* dep, size_t op_id, char* time, Application* req)
+{
+    if (dep == NULL || time == NULL || req == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+    if (op_id >= dep->operators_amount) {
+        return INVALID_INPUT;
+    }
+    
+    Operator* op = &(dep->staff[op_id]);
+    dep->free_operators_amount--;
+    
+    unsigned handling_time = 0;
+    if (dep->max_handlind_time == UINT_MAX && dep->min_handling_time == 0) {
+        handling_time = rand_32();
+    }
+    else {
+        handling_time = dep->min_handling_time + rand_32() % (dep->max_handlind_time - dep->min_handling_time + 1);
+    }
+    
+    op->a = req;
+    op->handling_time = handling_time;
+    
+    int st = strcpy_with_malloc(&(op->start_time), time);
+    if (st != ok) {
+        return st;
+    }
+    iso_time_add(op->start_time, op->handling_time * 60, &(op->finish_time));
+    
+    return ok;
+}
+
 
 int generate_random_str(char** name) {
     //srand(time(NULL));
@@ -232,4 +267,93 @@ void Department_print(FILE* stream, Department* dep) {
     fprintf(stream, "min_handling_time: %u\n", dep->min_handling_time);
     fprintf(stream, "max_handling_time: %u\n\n", dep->max_handlind_time);
 }
+
+int Department_handling_finishing(Department* dep, char* tmp_time) {
+    if (dep == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+
+    for (int i = 0; i < dep->operators_amount; i++) {
+        if (dep->staff[i].a != NULL) {
+            if (strcmp(dep->staff[i].finish_time, tmp_time) <= 0) {
+                //log_this
+                printf("Handled: %s\n", dep->staff[i].a->text);
+
+                free_application(dep->staff[i].a);
+                dep->staff[i].a = NULL;
+
+                free(dep->staff[i].start_time);
+                free(dep->staff[i].finish_time);
+                dep->staff[i].start_time = NULL;
+                dep->staff[i].finish_time = NULL;
+                dep->staff[i].handling_time = 0;
+                
+                (dep->free_operators_amount)++;
+                
+            }
+        }
+    }
+
+    int size;
+    int st = Priority_queue_size(dep->applications, &size);
+    if (st != ok) {
+        return st;
+    }
+
+    dep->load_coeff = size / dep->operators_amount;
+
+    return ok;
+}
+
+int Department_give_application(Department* dep, Application* a, char* tmp_time) {
+    if (dep == NULL || a == NULL || tmp_time == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+
+    int st = ok;
+
+    st = Priority_queue_insert(dep->applications, a);
+    if (st != ok) {
+        // mb free a??
+        return st;
+    }
+
+    if (dep->free_operators_amount > 0) {
+        for (int i = 0; i < dep->operators_amount; i++) {
+            if (dep->staff[i].a == NULL) {
+                Application* for_handling = NULL;
+                st = Priority_queue_del_max(dep->applications, &for_handling);
+                if (st != ok) {
+                    return st;
+                }
+
+                st = Operator_give_task(dep, i, tmp_time, for_handling);
+                if (st != ok) {
+                    free_application(for_handling);
+                    return st;
+                }
+
+                //log_this
+
+                break;
+            }
+        }
+    }
+
+    int size;
+    st = Priority_queue_size(dep->applications, &size);
+    if (st != ok) {
+        //
+        return st;
+    }
+
+    dep->load_coeff = size / dep->operators_amount;
+    
+    if (dep->load_coeff >= dep->overload_coeff) {
+        //log dep overload
+    }
+
+    return ok;
+}
+
 

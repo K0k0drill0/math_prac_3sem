@@ -142,6 +142,8 @@ int separate_words(char* line, const unsigned int amount, ...) {
             ind++;
         } 
         if (line[ind] == '\0') {
+            free(*str_tmp);
+            *str_tmp = NULL;
             return INVALID_APPLICATION;
         }
 
@@ -190,31 +192,19 @@ int separate_words(char* line, const unsigned int amount, ...) {
 
 int read_application_data(
     FILE* stream,
-    char** time, 
-    char** message_id, 
-    char** priority, 
-    char** dep_id, 
-    char** text, 
-    int* runtime_error) {
+    Unvalidated_application* a) {
         
-    if (stream == NULL ||
-        time == NULL ||
-        message_id == NULL ||
-        priority == NULL ||
-        dep_id == NULL ||
-        text == NULL ||
-        runtime_error == NULL) {
+    if (stream == NULL || a == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
 
-    *time = NULL;
-    *message_id = NULL;
-    *priority = NULL;
-    *dep_id = NULL;
-    *text = NULL;
-
     int st = ok;
-    *runtime_error = ok;
+
+    a->arrival_time = NULL;
+    a->dep_id = NULL;
+    a->id = NULL;
+    a->priority = NULL;
+    a->text = NULL;
 
     char* line = NULL;
     st = read_line(stream, &line);
@@ -223,26 +213,15 @@ int read_application_data(
         return st;
     }
 
-    st = separate_words(line, 5, time, message_id, priority, dep_id, text);
+    st = separate_words(line, 5, &(a->arrival_time), &(a->id),
+     &(a->priority), &(a->dep_id), &(a->text));
+    //st = separate_words(line, 5, time, message_id, priority, dep_id, text);
     free(line);
-    if (st != ok) {
-        if (st == INVALID_APPLICATION) {
-            st = ok;
-            *runtime_error = INVALID_APPLICATION;
-        }
-        else {
-            free_all(5, time, message_id, priority, dep_id, text);
-            *time = NULL;
-            *message_id = NULL;
-            *priority = NULL;
-            *dep_id = NULL;
-            *text = NULL;
-
-            return st;
-        }
+    if (st != ok && st != INVALID_APPLICATION) {
+        Unvalidated_application_free(a);
+        return st;
     } 
 
-    //*runtime_error = ok;
     return ok;
 }
 

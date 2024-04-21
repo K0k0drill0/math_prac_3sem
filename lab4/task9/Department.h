@@ -4,6 +4,8 @@
 #include "priority_queue/priority_queue.h"
 #include "data_structs.h"
 
+//#include "map/map.h"
+
 // Название (идентификатор)
 
 /*Что известно о департаменте?
@@ -54,6 +56,11 @@ int Department_set_null(Department* d);
 void Department_free(Department* dep);
 
 void Department_print(FILE* stream, Department* dep);
+
+int Department_handling_finishing(Department* dep, char* tmp_time);
+int Department_give_application(Department* dep, Application* a, char* tmp_time);
+
+
 
 
 #endif
