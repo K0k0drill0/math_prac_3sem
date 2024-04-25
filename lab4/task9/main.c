@@ -16,6 +16,7 @@
 #include "map/map.h"
 
 #include "Department.h"
+#include "logger.h"
 
 #include "map/Dynamic_array.h"
 
@@ -191,7 +192,7 @@ int setup_configuration(FILE* inp, Map* Departments, char** start_time,
     return ok;
 }
 
-int build_application(Unvalidated_application* source, Application** res, int max_priority) {
+int build_application(Unvalidated_application* source, Application** res, int max_priority, Logger* log) {
     if (source == NULL || res == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
@@ -205,8 +206,14 @@ int build_application(Unvalidated_application* source, Application** res, int ma
     }
 
     if (runtime_error != ok) {
+        st = Logger_add_and_init_message(log, source->arrival_time, RUNTIME_ERROR,
+         runtime_error, 0, NULL, NULL, 0);
         //log_this
-        print_runtime_error(stdout, runtime_error);
+        //print_runtime_error(stdout, runtime_error);
+        if (st != ok) {
+            Unvalidated_application_free(source);
+            return st;
+        }
         Unvalidated_application_free(source);
         return ok;
     }
@@ -217,12 +224,14 @@ int build_application(Unvalidated_application* source, Application** res, int ma
 
     if (errno == ERANGE || ipriority > max_priority) {
         //log_this
-        (errno == ERANGE) ? print_runtime_error(stdout, OVERFLOW) 
-        : print_runtime_error(stdout, INVALID_PRIORITY);
+        st = (errno == ERANGE) ? 
+        Logger_add_and_init_message(log, source->arrival_time, RUNTIME_ERROR, OVERFLOW, 0, NULL, NULL, 0) 
+        : Logger_add_and_init_message(log, source->arrival_time, runtime_error, INVALID_PRIORITY, 0, NULL, NULL, 0);
 
-        print_runtime_error(stdout, runtime_error);
+        //print_runtime_error(stdout, runtime_error);
         Unvalidated_application_free(source);
-        return ok;
+
+        return st;
     }
 
     remove_quotes(source->text);
@@ -293,7 +302,7 @@ int handle_files_with_applications(int argc, char** argv, Unvalidated_applicatio
 }
 
 int Department_handle_overload(Department* dep, Map* Departments,
- unsigned int deps_amount, char** deps_names) {
+ unsigned int deps_amount, char** deps_names, Application* a, Logger* log) {
 
     if (dep == NULL || Departments == NULL || deps_names == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
@@ -339,7 +348,10 @@ int Department_handle_overload(Department* dep, Map* Departments,
     }
 
     if (dep_min_load == dep) {
-        return ok;
+        st = Logger_add_and_init_message(log, a->arrival_time, DEPARTMENT_OVERLOADED,
+         0, a->id, NULL, NULL, 0);
+
+        return st;
     }
 
     st = Priority_queue_meld(dep_min_load->applications, dep_min_load->applications, dep->applications);
@@ -347,12 +359,14 @@ int Department_handle_overload(Department* dep, Map* Departments,
         return st;
     }
 
-    return ok;
+    st = Logger_add_and_init_message(log, a->arrival_time, DEPARTMENT_OVERLOADED,
+     0, a->id, dep_min_load->name, NULL, 0);
 
+    return st;
 }
 
 int Departments_handle_finish_tasks(Map* Departments, char* tmp_time,
- unsigned int deps_amount, char** deps_names) {
+ unsigned int deps_amount, char** deps_names, Logger* log) {
 
     if (Departments == NULL || deps_names == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
@@ -368,7 +382,7 @@ int Departments_handle_finish_tasks(Map* Departments, char* tmp_time,
             return st;
         }
 
-        st = Department_handling_finishing(tmp_dep, tmp_time);
+        st = Department_handling_finishing(tmp_dep, tmp_time, log);
         if (st != ok) {
             return st;
         }
@@ -394,11 +408,13 @@ int is_valid_args(int argc, char** argv) {
 
 int main(int argc, char** argv) {
 
+    srand(time(NULL));
+
     argc = 4;
 
     argv[1] = "20";
     argv[2] = "config";
-    argv[3] = "application1";
+    argv[3] = "application2";
     argv[4] = "application2";
 
     FILE* config = fopen(argv[2], "r");
@@ -452,17 +468,47 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    FILE* log_file = fopen("log", "w+");
+    if (log_file == NULL) {
+        print_error(stdout, UNABLE_TO_OPEN_FILE);
+
+        Unvalidated_application_arr_free(&arr);
+
+        Map_free(&Departments);
+        free(deps_names);
+        free(start_time);
+        free(finish_time);
+    }
+
+    Logger log;
+
+    // st = Logger_init(&log, stdout);
+    st = Logger_init(&log, log_file);
+    if (st != ok) {
+        print_error(stdout, UNABLE_TO_OPEN_FILE);
+
+        Unvalidated_application_arr_free(&arr);
+
+        Map_free(&Departments);
+        free(deps_names);
+        free(start_time);
+        free(finish_time);
+        fclose(log_file);
+    } 
+
+
     char* tmp_time = start_time;
 
     for (int i = 0; i < arr.size; i++) {
         Application* tmp_a = NULL;
         
-        st = build_application(&(arr.data[i]), &tmp_a, max_priority);
+        st = build_application(&(arr.data[i]), &tmp_a, max_priority, &log);
         if (st != ok) {
             break;
         }
 
         if (tmp_a == NULL) {
+            Logger_log(&log);
             // probably_log
             continue;
         }
@@ -474,38 +520,58 @@ int main(int argc, char** argv) {
         }
 
         st = Departments_handle_finish_tasks(&Departments, tmp_time,
-         deps_amount, deps_names);
+         deps_amount, deps_names, &log);
         if (st != ok) {
-            continue;
+            free_application(tmp_a);
+            break;
         }
 
         Department* tmp_dep = NULL;
         st = Map_find(&Departments, tmp_a->dep_id, &tmp_dep);
         if (st != ok) {
-            // free_tmp_a??
+            free_application(tmp_a);
             break;
         }
 
         if (tmp_dep == NULL) {
-            //log_this
-            //free_applicaation
+            st = Logger_add_and_init_message(&log, tmp_time, RUNTIME_ERROR,
+             INVALID_DEPARTMENT_NAME, 0, NULL, NULL, 0);
+
+            free_application(tmp_a);
+
+            if (st != ok) {
+                break;
+            }
+
+            st = Logger_log(&log);
+            if (st != ok) {
+                break;
+            }
             continue;
         }
 
-        st = Department_give_application(tmp_dep, tmp_a, tmp_time);
+        st = Department_give_application(tmp_dep, tmp_a, tmp_time, &log);
+        if (st != ok) {
+            free_application(tmp_a);
+            break;
+        }
+
+        st = Department_handle_overload(tmp_dep, &Departments, deps_amount, deps_names, tmp_a, &log);
         if (st != ok) {
             break;
         }
 
-        st = Department_handle_overload(tmp_dep, &Departments, deps_amount, deps_names);
+        st = Logger_log(&log);
         if (st != ok) {
             break;
         }
     }
 
 
-    st = Departments_handle_finish_tasks(&Departments, finish_time,
-         deps_amount, deps_names);
+    st = st ? st : Departments_handle_finish_tasks(&Departments, finish_time,
+         deps_amount, deps_names, &log);
+
+    st = st ? st : Logger_log(&log); 
 
     Unvalidated_application_arr_free(&arr);
 
@@ -513,6 +579,7 @@ int main(int argc, char** argv) {
     free(deps_names);
     free(start_time);
     free(finish_time);
+    Logger_free(&log);
 
     if (st != ok) {
         print_error(stdout, st);

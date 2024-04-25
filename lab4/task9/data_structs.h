@@ -103,5 +103,6 @@ int mult_safely(ll arg_1, ll arg_2, ll* res);
 
 int iso_time_add(char* time, ull add_s, char** res);
 unsigned rand_32();
+int parse_ullong(const char* src, int base, ull* number);
 
 #endif

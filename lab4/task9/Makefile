@@ -13,10 +13,10 @@ UT_H = data_structs.h errors.h
 UT_C = data_structs.c errors.c
 UT_O = data_structs.o errors.o
 
-main: main.o $(UT_O) $(PQ_O) $(MAP_O) Department.o readers.o validators.o
-	$(CC) $(CFLAGS) -o main main.o $(UT_O) $(PQ_O) $(MAP_O) Department.o readers.o validators.o -lm
+main: main.o $(UT_O) $(PQ_O) $(MAP_O) Department.o readers.o validators.o logger.o
+	$(CC) $(CFLAGS) -o main main.o $(UT_O) $(PQ_O) $(MAP_O) Department.o readers.o validators.o logger.o -lm
 
-main.o: main.c $(UT_H) $(MAP_H) priority_queue/priority_queue.h map/map.h Department.h readers.h validators.h
+main.o: main.c $(UT_H) $(MAP_H) priority_queue/priority_queue.h map/map.h Department.h readers.h validators.h logger.h
 	$(CC) $(CFLAGS) -c main.c
 
 data_structs.o: data_structs.c data_structs.h
@@ -74,6 +74,11 @@ Hash_table.o: map/Hash_table.c map/Hash_table.h $(UT_H) Department.h
 Binary_search_tree.o: map/Binary_search_tree.c map/Binary_search_tree.h $(UT_H) Department.h
 	$(CC) $(CFLAGS) -c map/Binary_search_tree.c
 
+
+#____________logger___________
+
+logger.o: logger.c errors.h data_structs.h
+	$(CC) $(CFLAGS) -c logger.c
 
 .PHONY: clean
 

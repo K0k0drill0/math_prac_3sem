@@ -26,7 +26,9 @@ enum runtime_error {
 
     ZERO_POWERED_ZERO,
     OVERFLOW,
-    INVALID_MAX_PRIORITY
+    INVALID_MAX_PRIORITY,
+    INVALID_DEPARTMENT_NAME,
+    INVALID_BASE
 };
 
 void print_error(FILE* outp_stream, const int st);

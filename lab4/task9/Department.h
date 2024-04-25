@@ -3,6 +3,7 @@
 
 #include "priority_queue/priority_queue.h"
 #include "data_structs.h"
+#include "logger.h"
 
 //#include "map/map.h"
 
@@ -57,8 +58,8 @@ void Department_free(Department* dep);
 
 void Department_print(FILE* stream, Department* dep);
 
-int Department_handling_finishing(Department* dep, char* tmp_time);
-int Department_give_application(Department* dep, Application* a, char* tmp_time);
+int Department_handling_finishing(Department* dep, char* tmp_time, Logger* log);
+int Department_give_application(Department* dep, Application* a, char* tmp_time, Logger* log);
 
 
 

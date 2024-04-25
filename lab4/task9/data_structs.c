@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <time.h>
+#include <errno.h>
 //#include <algorithm>
 
 #include "errors.h"
@@ -580,4 +581,33 @@ unsigned rand_32()
 	x |= (rand() & 255) << 16;
 	x |= (rand() & 255) << 24;
 	return x;
+}
+
+
+int parse_ullong(const char* src, int base, ull* number)
+{
+	if (src == NULL || number == NULL)
+	{
+		return INVALID_FUNCTION_ARGUMENT;
+	}
+	if (base < 0 || base == 1 || base > 36)
+	{
+		return INVALID_BASE;
+	}
+	if (src[0] == '\0')
+	{
+		return INVALID_INPUT;
+	}
+	errno = 0;
+	char* ptr;
+	*number = strtoull(src, &ptr, base);
+	if (*ptr != '\0')
+	{
+		return INVALID_INPUT;
+	}
+	if (errno == ERANGE)
+	{
+		return OVERFLOW;
+	}
+	return ok;
 }

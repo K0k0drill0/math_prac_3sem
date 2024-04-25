@@ -137,6 +137,20 @@ int validate_application_data(
     return ok;
 }
 
+int is_valid_pq_type(const char* str) {
+    if (str == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+
+    return (
+        !strcmp(str, "BinaryHeap") ||
+        !strcmp(str, "BinomialHeap") ||
+        !strcmp(str, "FibonacciHeap") ||
+        !strcmp(str, "SkewHeap") ||
+        !strcmp(str, "LeftistHeap") ||
+        !strcmp(str, "Treap"));
+}
+
 int which_pq_type(const char* str, Priority_queue_type* t) {
     if (str == NULL || t == NULL) {
         return INVALID_FUNCTION_ARGUMENT;

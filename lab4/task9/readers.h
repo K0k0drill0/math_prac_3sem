@@ -6,6 +6,7 @@
 int remove_quotes(char* str);
 
 int read_line(FILE* stream, char** line);
+int read_word_from_file(FILE* inp, char** str_inp);
 
 int read_config_file(
     FILE* stream, 

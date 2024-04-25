@@ -268,7 +268,7 @@ void Department_print(FILE* stream, Department* dep) {
     fprintf(stream, "max_handling_time: %u\n\n", dep->max_handlind_time);
 }
 
-int Department_handling_finishing(Department* dep, char* tmp_time) {
+int Department_handling_finishing(Department* dep, char* tmp_time, Logger* log) {
     if (dep == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
@@ -277,7 +277,11 @@ int Department_handling_finishing(Department* dep, char* tmp_time) {
         if (dep->staff[i].a != NULL) {
             if (strcmp(dep->staff[i].finish_time, tmp_time) <= 0) {
                 //log_this
-                printf("Handled: %s\n", dep->staff[i].a->text);
+                //printf("Handled: %s\n", dep->staff[i].a->text);
+                
+                int st = Logger_add_and_init_message(log, dep->staff[i].finish_time,
+                 REQUEST_HANDLING_FINISHED, 0, dep->staff[i].a->id, NULL, dep->staff[i].name,
+                  dep->staff[i].handling_time);
 
                 free_application(dep->staff[i].a);
                 dep->staff[i].a = NULL;
@@ -290,6 +294,10 @@ int Department_handling_finishing(Department* dep, char* tmp_time) {
                 
                 (dep->free_operators_amount)++;
                 
+                if (st != ok) {
+                    return st;
+                }
+
             }
         }
     }
@@ -305,7 +313,7 @@ int Department_handling_finishing(Department* dep, char* tmp_time) {
     return ok;
 }
 
-int Department_give_application(Department* dep, Application* a, char* tmp_time) {
+int Department_give_application(Department* dep, Application* a, char* tmp_time, Logger* log) {
     if (dep == NULL || a == NULL || tmp_time == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }
@@ -314,7 +322,6 @@ int Department_give_application(Department* dep, Application* a, char* tmp_time)
 
     st = Priority_queue_insert(dep->applications, a);
     if (st != ok) {
-        // mb free a??
         return st;
     }
 
@@ -333,6 +340,14 @@ int Department_give_application(Department* dep, Application* a, char* tmp_time)
                     return st;
                 }
 
+                st = Logger_add_and_init_message(log, tmp_time,
+                 REQUEST_HANDLING_STARTED, 0, a->id, NULL,
+                  dep->staff[i].name, dep->staff[i].handling_time);
+
+                if (st != ok) {
+                    free_application(for_handling);
+                    return st;
+                }
                 //log_this
 
                 break;
@@ -343,15 +358,10 @@ int Department_give_application(Department* dep, Application* a, char* tmp_time)
     int size;
     st = Priority_queue_size(dep->applications, &size);
     if (st != ok) {
-        //
         return st;
     }
 
     dep->load_coeff = size / dep->operators_amount;
-    
-    if (dep->load_coeff >= dep->overload_coeff) {
-        //log dep overload
-    }
 
     return ok;
 }
