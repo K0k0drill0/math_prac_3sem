@@ -1,2 +1,106 @@
-[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 1 was started by operator 78.
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 1 was started by operator TJ.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 2 was started by operator CN.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 3 was started by operator 7STZN.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 4 was started by operator O.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 5 was started by operator CAD7.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 6 was started by operator 9F8O.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 7 was started by operator 5IBFJ35JFT.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 8 was started by operator ELIEC1.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 9 was started by operator NB0AH1.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 10 was started by operator WD.
+
+[2024-01-01T12:00:00Z] [DEPARTMENT_OVERLOADED]: Department was overloaded after receiving request 21. Its request was transfered to department DEP2
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 11 was started by operator 7UFMDAK.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 12 was started by operator WDK9.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 13 was started by operator 1F4.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 14 was started by operator G10Y50M.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 15 was started by operator 5A3A3SH.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 16 was started by operator 98.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 17 was started by operator XD793MG.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 18 was started by operator 607P9Z4N7Y.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 19 was started by operator PEYX4W6VC.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 20 was started by operator QIBO.
+
+[2024-01-01T12:00:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 21 was started by operator C0.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 3 was finished in by operator 7STZN in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 4 was finished in by operator O in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 5 was finished in by operator CAD7 in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 6 was finished in by operator 9F8O in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 8 was finished in by operator ELIEC1 in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 9 was finished in by operator NB0AH1 in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 10 was finished in by operator WD in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 11 was finished in by operator 7UFMDAK in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 15 was finished in by operator 5A3A3SH in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 16 was finished in by operator 98 in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 17 was finished in by operator XD793MG in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 18 was finished in by operator 607P9Z4N7Y in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 20 was finished in by operator QIBO in 2 minutes.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 22 was started by operator 7STZN.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 23 was started by operator O.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 24 was started by operator CAD7.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 25 was started by operator 9F8O.
+
+[2024-01-01T12:02:00Z] [REQUEST_HANDLING_STARTED]: Handling of request 26 was started by operator ELIEC1.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 1 was finished in by operator TJ in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 2 was finished in by operator CN in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 7 was finished in by operator 5IBFJ35JFT in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 12 was finished in by operator WDK9 in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 13 was finished in by operator 1F4 in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 14 was finished in by operator G10Y50M in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 19 was finished in by operator PEYX4W6VC in 3 minutes.
+
+[2024-01-01T12:03:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 21 was finished in by operator C0 in 3 minutes.
+
+[2024-01-01T12:04:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 22 was finished in by operator 7STZN in 2 minutes.
+
+[2024-01-01T12:04:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 23 was finished in by operator O in 2 minutes.
+
+[2024-01-01T12:05:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 24 was finished in by operator CAD7 in 3 minutes.
+
+[2024-01-01T12:05:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 25 was finished in by operator 9F8O in 3 minutes.
+
+[2024-01-01T12:05:00Z] [REQUEST_HANDLING_FINISHED]: Handling of request 26 was finished in by operator ELIEC1 in 3 minutes.
 

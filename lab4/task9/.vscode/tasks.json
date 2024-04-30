@@ -5,6 +5,7 @@
             "label": "C/C++: gcc build active file",
             "command": "make", //"/usr/bin/gcc",
             "args": [
+                
                 // "-fdiagnostics-color=always",
                 // "-g",
                 // "${file}",

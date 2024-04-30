@@ -396,6 +396,7 @@ int Departments_handle_finish_tasks(Map* Departments, char* tmp_time,
 }
 
 int is_valid_args(int argc, char** argv) {
+    printf("%d\n", argc);
     if (argc < 2) {
         return INVALID_AMOUNT_OF_ARGUMENTS;
     }
@@ -456,15 +457,26 @@ int main(int argc, char** argv) {
 
     argc = 4;
 
-    argv[1] = "20";
+    argv[1] = "8";
     argv[2] = "config";
     argv[3] = "application2";
     argv[4] = "application1";
+    // int st1 = is_valid_args(argc, argv);
+    // if (st1 != ok) {
+    //     print_error(stdout, st1);
+    //     return 1;
+    // }
 
     FILE* config = fopen(argv[2], "r");
     if (config == NULL) {
         print_error(stdout, UNABLE_TO_OPEN_FILE);
         return -1;
+    }
+
+    if (!is_valid_uint(argv[1])) {
+        print_error(stdout, INVALID_MAX_PRIORITY);
+        fclose(config);
+        return 1;
     }
 
     int  max_priority = atoi(argv[1]);
