@@ -8,6 +8,7 @@
 
 int is_valid_time_ISO_8601(const char *dateString);
 int is_valid_uint(const char* str);
+int is_valid_udouble(const char* str);
 
 int validate_application_data(
     char *time,

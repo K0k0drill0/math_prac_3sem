@@ -66,7 +66,7 @@ int print_runtime_error(FILE* outp_stream, int st) {
         fprintf(outp_stream, "Invalid department name!\n");
         break;
     case INVALID_BASE:
-        fprintf("Invalid base!");
+        fprintf(outp_stream, "Invalid base!");
         break;
     default:
         return INVALID_FUNCTION_ARGUMENT;

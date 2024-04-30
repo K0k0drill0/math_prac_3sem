@@ -212,11 +212,11 @@ int Message_queue_insert(Message_queue* q, Message msg) {
     }
 
     if (q->size == q->max_size) {
-        Message* tmp = (Message*)realloc(q->data, q->max_size * 2);
+        Message* tmp = (Message*)realloc(q->data, sizeof(Message) * q->max_size * 2);
         if (tmp == NULL) {
             return MEMORY_ISSUES;
         }
-
+        q->data = tmp;
         q->max_size *= 2;
     }
 

@@ -1,35 +1,29 @@
-#ifndef BINARY_HEAP_H
-#define BINARY_HEAP_H
+#ifndef _BINARY_HEAP_H_
+#define _BINARY_HEAP_H_
+
+#include <stdlib.h>
 
 #include "../data_structs.h"
 
-typedef struct Binary_heap {
-    Application_arr heap;
-    
-    int (*comparator)(const Application*, const Application*);
+typedef struct Binary_heap
+{
+    unsigned int size;
+    unsigned int capacity;
+    Application** elems;
+    int (*compare)(const Application*, const Application*);
 } Binary_heap;
 
 int Binary_heap_set_null(Binary_heap* bh);
-int Binary_heap_init(Binary_heap* bh,
- int (*comparator)(const Application*, const Application*)) ;
-
-int Binary_heap_copy(Binary_heap* dest, Binary_heap* source);
-
-// int Binary_heap_sift_down(Binary_heap bh, int i);
-// int Binary_heap_sift_up(Binary_heap bh, int i);
-
-int Binary_heap_insert(Binary_heap* bh, Application* a);
-
-int Binary_heap_get_max(Binary_heap* bh, Application** res) ;
-int Binary_heap_del_max(Binary_heap* bh, Application** res);
-
-int Binary_heap_merge_no_destruction(Binary_heap* res, Binary_heap* bh1, Binary_heap* bh2);
-int Binary_heap_merge_with_destruction(Binary_heap* res, Binary_heap* bh1, Binary_heap *bh2);
-
-void Binary_heap_print(Application_arr heap, int index, int level);
-
+int Binary_heap_init(Binary_heap* bh, int (*compare)(const Application*, const Application*));
+int Binary_heap_copy(Binary_heap* bh_dest, Binary_heap* bh_src);
 int Binary_heap_free(Binary_heap* bh);
 
-int Binary_heap_size(Binary_heap* bh, unsigned int* res);
+int Binary_heap_meld(Binary_heap* bh, Binary_heap* bh_l, Binary_heap* bh_r);
+int Binary_heap_copy_meld(Binary_heap* bh, Binary_heap* bh_l, Binary_heap* bh_r);
 
-#endif
+int Binary_heap_size(Binary_heap* bh, unsigned int* size);
+int Binary_heap_get_max(Binary_heap* bh, Application** req);
+int Binary_heap_del_max(Binary_heap* bh, Application** req);
+int Binary_heap_insert(Binary_heap* bh, Application* req);
+
+#endif //_BINARY_HEAP_H_

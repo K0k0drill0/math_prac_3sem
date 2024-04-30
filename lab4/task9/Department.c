@@ -85,7 +85,7 @@ int Operator_give_task(Department* dep, size_t op_id, char* time, Application* r
 }
 
 
-int generate_random_str(char** name) {
+int generate_random_str2(char** name) {
     //srand(time(NULL));
     int max_length = 10, min_length = 1;
 
@@ -124,7 +124,7 @@ int Operator_array_init(Operator** arr, unsigned int size) {
 
         do {
             char* new_name = NULL;
-            st = generate_random_str(&new_name);
+            st = generate_random_str2(&new_name);
             flag = 0;
 
             if (st != ok) {
@@ -308,7 +308,7 @@ int Department_handling_finishing(Department* dep, char* tmp_time, Logger* log) 
         return st;
     }
 
-    dep->load_coeff = size / dep->operators_amount;
+    dep->load_coeff = (double)size / (double)dep->operators_amount;
 
     return ok;
 }
@@ -325,7 +325,13 @@ int Department_give_application(Department* dep, Application* a, char* tmp_time,
         return st;
     }
 
-    if (dep->free_operators_amount > 0) {
+    unsigned int tmp_size;
+    st = Priority_queue_size(dep->applications, &tmp_size);
+    if (st != ok) {
+        return st;
+    }
+
+    while (dep->free_operators_amount > 0 && tmp_size > 0) {
         for (int i = 0; i < dep->operators_amount; i++) {
             if (dep->staff[i].a == NULL) {
                 Application* for_handling = NULL;
@@ -341,15 +347,15 @@ int Department_give_application(Department* dep, Application* a, char* tmp_time,
                 }
 
                 st = Logger_add_and_init_message(log, tmp_time,
-                 REQUEST_HANDLING_STARTED, 0, a->id, NULL,
+                 REQUEST_HANDLING_STARTED, 0, for_handling->id, NULL,
                   dep->staff[i].name, dep->staff[i].handling_time);
 
                 if (st != ok) {
                     free_application(for_handling);
                     return st;
                 }
-                //log_this
 
+                tmp_size--;
                 break;
             }
         }
@@ -361,9 +367,62 @@ int Department_give_application(Department* dep, Application* a, char* tmp_time,
         return st;
     }
 
-    dep->load_coeff = size / dep->operators_amount;
+    dep->load_coeff = (double)size / (double)dep->operators_amount;
 
     return ok;
 }
 
+int Department_give_work_to_free_operators (Department* dep, char* tmp_time, Logger* log) {
+    if (dep == NULL || tmp_time == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
 
+    int st = ok;
+
+    unsigned int tmp_size;
+    st = Priority_queue_size(dep->applications, &tmp_size);
+    if (st != ok) {
+        return st;
+    }
+
+    while (dep->free_operators_amount > 0 && tmp_size > 0) {
+        for (int i = 0; i < dep->operators_amount; i++) {
+            if (dep->staff[i].a == NULL) {
+                Application* for_handling = NULL;
+                st = Priority_queue_del_max(dep->applications, &for_handling);
+                if (st != ok) {
+                    return st;
+                }
+
+                st = Operator_give_task(dep, i, tmp_time, for_handling);
+                if (st != ok) {
+                    free_application(for_handling);
+                    return st;
+                }
+
+                st = Logger_add_and_init_message(log, tmp_time,
+                 REQUEST_HANDLING_STARTED, 0, for_handling->id, NULL,
+                  dep->staff[i].name, dep->staff[i].handling_time);
+
+                if (st != ok) {
+                    free_application(for_handling);
+                    return st;
+                }
+                //log_this
+
+                tmp_size--;
+                break;
+            }
+        }
+    }
+
+    int size;
+    st = Priority_queue_size(dep->applications, &size);
+    if (st != ok) {
+        return st;
+    }
+
+    dep->load_coeff = (double)size / (double)dep->operators_amount;
+
+    return ok;
+}

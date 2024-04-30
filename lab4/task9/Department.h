@@ -61,7 +61,7 @@ void Department_print(FILE* stream, Department* dep);
 int Department_handling_finishing(Department* dep, char* tmp_time, Logger* log);
 int Department_give_application(Department* dep, Application* a, char* tmp_time, Logger* log);
 
-
+int Department_give_work_to_free_operators (Department* dep, char* tmp_time, Logger* log);
 
 
 #endif

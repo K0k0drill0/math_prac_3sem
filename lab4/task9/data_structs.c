@@ -611,3 +611,127 @@ int parse_ullong(const char* src, int base, ull* number)
 	}
 	return ok;
 }
+
+
+int iso_time_convert_to_int(const char time[21], ull* time_int)
+{
+    if (time == NULL || time_int == NULL)
+    {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+    
+    char time_tmp[21];
+    strcpy(time_tmp, time);
+    
+    struct tm t = { 0 };
+    t.tm_sec = atoi(time_tmp + 17);
+    t.tm_min = atoi(time_tmp + 14);
+    t.tm_hour = atoi(time_tmp + 11);
+    t.tm_mday = atoi(time_tmp + 8);
+    t.tm_mon = atoi(time_tmp + 5) - 1;
+    t.tm_year = atoi(time_tmp) - 1900;
+    
+    *time_int = (ull) mktime(&t);
+    
+    return ok;
+}
+
+int generate_random_str(char** str, const char* alphabet, size_t max_len)
+{
+	if (str == NULL)
+	{
+		return INVALID_FUNCTION_ARGUMENT;
+	}
+    
+	char flags[256];
+    memset(flags, 0, sizeof(char) * 256);
+    
+    for (size_t i = 0; alphabet[i]; ++i)
+    {
+        if (i > 0 && alphabet[i] == '-')
+        {
+            if (alphabet[i+1] == '\0' || alphabet[i-1] > alphabet[i+1])
+            {
+                return INVALID_INPUT;
+            }
+            
+            for (size_t j = alphabet[i-1]; j <= alphabet[i+1]; ++j)
+            {
+                flags[(int) j] = 1;
+            }
+        }
+        else
+        {
+            flags[(int) alphabet[i]] = 1;
+        }
+    }
+    
+    size_t len = 0;
+	char symbols[256];
+    char* ptr = symbols;
+    
+    for (size_t i = 0; i < 256; ++i)
+    {
+        if (flags[i])
+        {
+            *ptr++ = (char) i;
+        }
+    }
+    
+    *ptr = '\0';
+    len = ptr - symbols;
+    
+	size_t iter = 0;
+	size_t size = 4;
+	*str = (char*) malloc(sizeof(char) * size);
+	if (*str == NULL)
+	{
+		return MEMORY_ISSUES;
+	}
+	
+	char ch = symbols[rand() % (len + 1)];
+	while ((ch != '\0' || iter == 0) && iter < max_len)
+	{
+		while (iter == 0 && ch == '\0')
+		{
+			ch = symbols[rand() % (len + 1)];
+		}
+		if (iter > size - 2)
+		{
+			size *= 2;
+			char* temp_str = realloc(*str, size);
+			if (temp_str == NULL)
+			{
+				free(*str);
+				return MEMORY_ISSUES;
+			}
+			*str = temp_str;
+		}
+		(*str)[iter++] = ch;
+		ch = symbols[rand() % (len + 1)];
+	}
+	(*str)[iter] = '\0';
+	return ok;
+}
+
+int iso_time_convert_to_str(ull time_int, int time_zone, char time[21])
+{
+    if (time == NULL)
+    {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+    
+    struct tm t = { 0 };
+    t.tm_sec = time_int;
+    t.tm_min = 0;
+    t.tm_hour = time_zone;
+    t.tm_mday = 1;
+    t.tm_mon = 0;
+    t.tm_year = 70;
+    
+    mktime(&t);
+    
+    sprintf(time, "%04d-%02d-%02dT%02d:%02d:%02dZ", t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+    
+    return ok;
+}

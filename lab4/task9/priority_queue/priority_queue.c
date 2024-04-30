@@ -47,8 +47,8 @@ int Priority_queue_init(Priority_queue* pq, Priority_queue_type t, int (*compara
             pq->init 	= (int (*)(void*, int (*)(const Application*, const Application*))) Binary_heap_init;
             pq->copy 		= (int (*)(void*, void*)) 							Binary_heap_copy;
             pq->free 	= (int (*)(void*)) 											    Binary_heap_free;
-            pq->meld 		= (int (*)(void*, void*, void*)) 							Binary_heap_merge_with_destruction;
-            pq->copy_meld 	= (int (*)(void*, void*, void*))                Binary_heap_merge_no_destruction;
+            pq->meld 		= (int (*)(void*, void*, void*)) 							Binary_heap_meld;
+            pq->copy_meld 	= (int (*)(void*, void*, void*))                Binary_heap_copy_meld;
             pq->size 		= (int (*)(void*, unsigned int*))                                 Binary_heap_size;
             pq->get_max 		= (int (*)(void*, Application**))                       Binary_heap_get_max;
             pq->del_max 		= (int (*)(void*, Application**))                       Binary_heap_del_max;
@@ -232,10 +232,10 @@ int Priority_queue_meld(Priority_queue* res, Priority_queue* l, Priority_queue* 
     }
     
     *res = tmp;
-    free(l->ds);
-    free(r->ds);
-    l->ds = NULL;
-    r->ds = NULL;
+    // free(l->ds);
+    // free(r->ds);
+    // l->ds = NULL;
+    // r->ds = NULL;
     return ok;
 }
 

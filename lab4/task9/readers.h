@@ -20,6 +20,8 @@ int read_config_file(
     char** overload_coeff,
     str_pair_arr* arr
     );
+int read_config_for_application_generator(FILE* inp, char** start_time, 
+    char** finish_time, int* deps_amount, char*** deps_names);
 
 int read_application_data(
     FILE* stream,

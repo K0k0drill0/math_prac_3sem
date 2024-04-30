@@ -80,6 +80,22 @@ Binary_search_tree.o: map/Binary_search_tree.c map/Binary_search_tree.h $(UT_H) 
 logger.o: logger.c errors.h data_structs.h
 	$(CC) $(CFLAGS) -c logger.c
 
+#____________________9.2_______________-
+
+config_generator: config_generator.o $(UT_O) validators.o readers.o
+	$(CC) $(CFLAGS) -o config_generator config_generator.o $(UT_O) validators.o readers.o
+
+config_generator.o: config_generator.c $(UT_H) validators.h readers.h
+	$(CC) $(CFLAGS) -c config_generator.c
+
+#______________________9.3_____________
+
+application_generator: application_generator.o $(UT_O) readers.o validators.o
+	$(CC) $(CFLAGS) -o application_generator application_generator.o $(UT_O) readers.o validators.o
+
+application_generator.o: application_generator.c $(UT_H) readers.h validators.h
+	$(CC) $(CFLAGS) -c application_generator.c
+
 .PHONY: clean
 
 clean:

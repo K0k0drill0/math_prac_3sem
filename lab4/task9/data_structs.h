@@ -104,5 +104,8 @@ int mult_safely(ll arg_1, ll arg_2, ll* res);
 int iso_time_add(char* time, ull add_s, char** res);
 unsigned rand_32();
 int parse_ullong(const char* src, int base, ull* number);
+int iso_time_convert_to_int(const char time[21], ull* time_int);
+int iso_time_convert_to_str(ull time_int, int time_zone, char time[21]);
+int generate_random_str(char** str, const char* alphabet, size_t max_len);
 
 #endif

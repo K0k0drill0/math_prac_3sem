@@ -255,7 +255,7 @@ int Bm_heap_copy_meld(Bm_heap* Bmh_res, Bm_heap* Bmh_l, Bm_heap* Bmh_r) {
     return ok;
 }
 
-int Bm_heap_size(Bm_heap* Bmh, size_t* size) {
+int Bm_heap_size(Bm_heap* Bmh, unsigned int* size) {
     if (Bmh == NULL) {
         return INVALID_FUNCTION_ARGUMENT;
     }

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "../readers.h"
-#include "../validators.h"
-#include "../data_structs.h"
-#include "../errors.h"
+#include "readers.h"
+#include "validators.h"
+#include "data_structs.h"
+#include "errors.h"
 
 typedef enum gen_stage
 {
@@ -20,8 +21,31 @@ typedef enum gen_stage
     GEN_STAGE_FINISH
 } gen_stage;
 
+int free_names_arr(char** names, unsigned int amount) {
+    if (names == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
 
-int main() {
+    for (int i = 0; i < amount; i++) {
+        free(names[i]);
+    }
+
+    return ok;
+}
+
+int main(int argc, char** argv) {
+
+    if (argc != 2) {
+        printf("Usage: ./config_generator <name_of_future_config_file>\n");
+        return 1;
+    } 
+
+    FILE* future_config_file = fopen(argv[1], "w+");
+    if (future_config_file == NULL) {
+        printf("Invalid file!\n");
+        return -1;
+    }
+
     int st = ok;
 
     gen_stage stage = GEN_STAGE_PQ;
@@ -41,7 +65,7 @@ int main() {
 
     while(st == ok && stage != GEN_STAGE_EXIT && stage != GEN_STAGE_FINISH) {
         if (stage == GEN_STAGE_PQ) {
-            char** pq_names = {"BinaryHeap", "BinomialHeap", "FibonacciHeap", "SkewHeap", "LeftistHeap", "Treap"};
+            char pq_names[6][40] = {"BinaryHeap", "BinomialHeap", "FibonacciHeap", "SkewHeap", "LeftistHeap", "Treap"};
 
             printf("Input type of pq:\n");
             printf("1) BinaryHeap\n");
@@ -62,7 +86,7 @@ int main() {
                 if (st != ok) {
                     break;
                 }
-                stage = GEN_STAGE_MAP
+                stage = GEN_STAGE_MAP;
             }
             else if (strlen(input) == 1 && input[0] - '0' == 0) {
                 stage = GEN_STAGE_EXIT;
@@ -74,7 +98,7 @@ int main() {
             input = NULL;
         }
         if (stage == GEN_STAGE_MAP) {
-            char** map_types = {"HashSet", "DynamicArray", "BinarySearchTree", "Trie"};
+            char map_types[4][20] = {"HashSet", "DynamicArray", "BinarySearchTree", "Trie"};
 
             printf("Input map type.\n");
 
@@ -138,7 +162,7 @@ int main() {
             input2 = NULL;
         }
         if (stage == GEN_STAGE_HANDLE_TIME) {
-            printf("Input min and max handling times, separate both times with a line break.\nFormat: YYYY-MM-DDThh:mm:ssZ");
+            printf("Input min and max handling times, separate both times with a line break.\n");
             printf("For exit input 0.\n");
 
             st = st ? st : read_line(stdin, &input);
@@ -159,6 +183,7 @@ int main() {
 
                 if (errno == ERANGE || min_handle_time > max_handle_time) {
                     printf("Numbers are invalid!\n");
+                    errno = 0;
                 }
                 else {
                     stage = GEN_STAGE_DEP_CNT;
@@ -171,7 +196,7 @@ int main() {
             input = NULL;
             input2 = NULL;
         }
-        if (stage = GEN_STAGE_DEP_CNT) {
+        if (stage == GEN_STAGE_DEP_CNT) {
             printf("Input the amount of departments.\n");
 
             st = st ? st : read_line(stdin, &input);
@@ -207,7 +232,7 @@ int main() {
             free(input);
             input = NULL;
         }
-        if (stage = GEN_STAGE_DEP_INF) {
+        if (stage == GEN_STAGE_DEP_INF) {
             printf("Enter department staff size ([10..50]) and names\n");
             
             for (size_t i = 0; !st && i < dep_cnt; ++i) {
@@ -252,21 +277,60 @@ int main() {
             }
         }
         if (stage == GEN_STAGE_COEF) {
-            
+            printf("Input overload coeff.\n");
+
+            st = st ? st : read_line(stdin, &input);
+
+            if (st != ok) {
+                break;
+            }
+
+            if (is_valid_udouble(input)) {
+                overload_coef = atof(input);
+
+                if (overload_coef < 1.0) {
+                    printf("Coeff should be bigger, than 1.0!\n");
+                }
+                else {
+                    stage = GEN_STAGE_FINISH;
+                }
+            }
+            else {
+                printf("Invalid coeff!\n");
+            }
+            free(input);
+            input = NULL;
         }
     }
 
-    if (stage == GEN_STAGE_EXIT) {
-        free_all(7, heap_type,
-            map_type,
-            start_time,
-            finish_time,
-            min_handling_time,
-            max_handling_time,
-            deps_amount);
-
-        for (int i = 0; i < deps_amount; i++) {
-
+    if (!st && stage == GEN_STAGE_FINISH) {
+        fprintf(future_config_file, "%s\n", pq_name);
+        fprintf(future_config_file, "%s\n", map_name);
+        fprintf(future_config_file, "%s\n", st_time);
+        fprintf(future_config_file, "%s\n", end_time);
+        fprintf(future_config_file, "%llu\n", min_handle_time);
+        fprintf(future_config_file, "%llu\n", max_handle_time);
+        fprintf(future_config_file, "%llu\n", dep_cnt);
+        
+        for (int i = 0; i < dep_cnt; i++) {
+            fprintf(future_config_file, "%s %u\n", dep_names[i], staff_cnts[i]);
         }
+
+        fprintf(future_config_file, "%f\n", overload_coef);
     }
+
+    free_all(6, input, input2, pq_name, map_name, st_time, end_time);
+    free_names_arr(dep_names, dep_cnt);
+    free(staff_cnts);
+    free(dep_names);
+    fclose(future_config_file);
+
+    if (st != ok) {
+        print_error(stdout, st);
+        return 1;
+    }
+
+    printf("Das Programm hat erfolgreich funktioniert!\n");
+
+    return 0;
 }

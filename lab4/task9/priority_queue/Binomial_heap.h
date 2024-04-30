@@ -27,7 +27,7 @@ int Bm_heap_free(Bm_heap* Bmh);
 int Bm_heap_meld(Bm_heap* Bmh_res, Bm_heap* Bmh_l, Bm_heap* Bmh_r);
 int Bm_heap_copy_meld(Bm_heap* Bmh_res, Bm_heap* Bmh_l, Bm_heap* Bmh_r);
 
-int Bm_heap_size(Bm_heap* Bmh, size_t* size);
+int Bm_heap_size(Bm_heap* Bmh, unsigned int* size);
 int Bm_heap_get_max(Bm_heap* Bmh, Application** req);
 int Bm_heap_del_max(Bm_heap* Bmh, Application** req);
 int Bm_heap_insert(Bm_heap* Bmh, Application* req);

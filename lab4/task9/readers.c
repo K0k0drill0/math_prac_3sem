@@ -326,3 +326,80 @@ int read_config_file(
 
     return ok;
 }
+
+int read_config_for_application_generator(FILE* inp, char** start_time, 
+    char** finish_time, int* deps_amount, char*** deps_names) {
+    if (inp == NULL || start_time == NULL || finish_time == NULL || deps_amount == NULL || deps_names == NULL) {
+        return INVALID_FUNCTION_ARGUMENT;
+    }
+
+    int st = ok;
+
+    char* input = NULL;
+    char* deps_am_str = NULL;
+
+    st = st ? st : read_word_from_file(inp, &input);
+    free(input);
+    input = NULL;
+
+    st = st ? st : read_word_from_file(inp, &input);
+    free(input);
+    input = NULL;
+
+    st = st ? st : read_word_from_file(inp, start_time);
+    st = st ? st : read_word_from_file(inp, finish_time);
+
+    st = st ? st : read_word_from_file(inp, &input);
+    free(input);
+    input = NULL;
+
+    st = st ? st : read_word_from_file(inp, &input);
+    free(input);
+    input = NULL;
+
+    st = st ? st : read_word_from_file(inp, &deps_am_str);
+
+    if (st != ok || !is_valid_uint(deps_am_str)) {
+        free(input);
+        free(deps_am_str);
+        return st;
+    }
+
+    *deps_amount = atoi(deps_am_str);
+    if (errno == ERANGE) {
+        errno = 0;
+        free(input);
+        free(deps_am_str);
+        return OVERFLOW;
+    }
+    free(deps_am_str);
+
+    *deps_names = (char**)malloc(sizeof(char*) * *deps_amount);
+    if (*deps_names == NULL) {
+        free(input);
+        return MEMORY_ISSUES;
+    }
+
+    for (int i = 0; i < *deps_amount; i++) {
+        st = read_word_from_file(inp, &((*deps_names)[i]));
+        if (st != ok) {
+            for (int j = 0; j < i; j++) {
+                free((*deps_names)[j]);
+            }
+            free(*deps_names);
+            *deps_names = NULL;
+        }
+        st = read_word_from_file(inp, &input);
+        if (st != ok) {
+            for (int j = 0; j < i; j++) {
+                free((*deps_names)[j]);
+            }
+            free(*deps_names);
+            *deps_names = NULL;
+        }
+        free(input);
+        input = NULL;
+    }
+
+    return ok;
+}

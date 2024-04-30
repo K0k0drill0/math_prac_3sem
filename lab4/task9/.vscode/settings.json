@@ -1,6 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "system_error": "c"
+        "system_error": "c",
+        "readers.h": "c"
     }
 }
