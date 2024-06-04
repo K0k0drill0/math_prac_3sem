@@ -1,0 +1,6 @@
+left=
+op()
+add +
+mult mult
+mult *
+not !

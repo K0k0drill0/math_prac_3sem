@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/main.dir/main.c.o CMakeFiles/main.dir/operation_syntax.c.o CMakeFiles/main.dir/operation_type.c.o CMakeFiles/main.dir/errors.c.o CMakeFiles/main.dir/interpreter.c.o CMakeFiles/main.dir/Trie.c.o CMakeFiles/main.dir/settings_work.c.o CMakeFiles/main.dir/debug.c.o -o main  -lm 

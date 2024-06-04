@@ -1,0 +1,9 @@
+# ninja log v5
+32	264	7391952220435518	CMakeFiles/main.dir/errors.c.obj	b39eedc9e01c10a1
+16	315	7391952220947694	CMakeFiles/main.dir/operation_type.c.obj	be47c8b57e4161d0
+2	322	7391952221087862	CMakeFiles/main.dir/main.c.obj	48a947101ef7ed21
+63	336	7391952221247191	CMakeFiles/main.dir/Trie.c.obj	a97f0d6eb02217c3
+7	349	7391952221388021	CMakeFiles/main.dir/operation_syntax.c.obj	d8e4d6db49dbc8a1
+88	359	7391952221433673	CMakeFiles/main.dir/settings_work.c.obj	8d76728b01c84a2c
+110	406	7391952221951025	CMakeFiles/main.dir/debug.c.obj	995094da6389e16d
+51	416	7391952222061591	CMakeFiles/main.dir/interpreter.c.obj	dfe5717dbf40a338

@@ -1,0 +1,42 @@
+[
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/main.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/main.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/main.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/operation_syntax.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/operation_syntax.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/operation_syntax.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/operation_type.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/operation_type.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/operation_type.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/errors.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/errors.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/errors.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/interpreter.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/interpreter.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/interpreter.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/Trie.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/Trie.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/Trie.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/settings_work.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/settings_work.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/settings_work.c"
+},
+{
+  "directory": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build",
+  "command": "/usr/bin/cc   -g -o CMakeFiles/main.dir/debug.c.o -c /home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/debug.c",
+  "file": "/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/debug.c"
+}
+]

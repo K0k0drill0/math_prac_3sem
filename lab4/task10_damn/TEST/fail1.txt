@@ -1,0 +1,3 @@
+a = FF;
+b = input(a);
+ouptut(a) + output(b);

@@ -1,0 +1,3 @@
+/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build/CMakeFiles/main.dir
+/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build/CMakeFiles/edit_cache.dir
+/home/kokodrillo/git_projects/math_prac_3sem/lab4/task10_damn/build/CMakeFiles/rebuild_cache.dir

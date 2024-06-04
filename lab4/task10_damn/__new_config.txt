@@ -1,0 +1,15 @@
+left=
+op()
+not !
+input input
+output output
+add +
+mult *
+sub sub
+pow pow
+div /
+rem rem
+xor xor
+and and
+or or
+= =

@@ -1,0 +1,9 @@
+var = 1;
+input(var);
+#BREAKPOINT
+va = +(!(!(2)), *(9F, var)); 
+#dsfs sdf
+output(va); 
+#sfds
+tm = var;
+#BREAKPOINT
